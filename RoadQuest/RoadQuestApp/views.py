@@ -8,3 +8,6 @@ def home(request):
 def todos(request):
     items = TodoItem.objects.all()
     return render(request, "todos.html", {"todos": items})
+
+def route(response):
+    return render(response, "main/route.html", {"forms":form} )
