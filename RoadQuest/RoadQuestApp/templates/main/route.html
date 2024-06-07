@@ -1,0 +1,13 @@
+{% extends "base.html" %} 
+{% block title %} <h1> Create Route </h1> {% endblock %}   
+{% block content %} 
+
+<p> Create Route </p> 
+
+<form method="post" action="/route/"> 
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit", name="Go">Create New Route</button>
+</form>
+    
+    {% endblock %}
