@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from .models import TodoItem
+from .forms import CreateNewRoute
 
 # Create your views here.
 def home(request): 
@@ -10,4 +11,5 @@ def todos(request):
     return render(request, "todos.html", {"todos": items})
 
 def route(response):
-    return render(response, "main/route.html", {"forms":form} )
+    form = CreateNewRoute()
+    return render(response, "main/route.html", {"form":form} )
