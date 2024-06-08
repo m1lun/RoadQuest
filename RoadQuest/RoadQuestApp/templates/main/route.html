@@ -7,7 +7,25 @@
 <form method="post" action="/route/"> 
     {% csrf_token %}
     {{form.as_p}}
-    <button type="submit", name="Go">Create New Route</button>
+    <button type="submit" name="Go">Create New Route</button>
 </form>
-    
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAHCOFGMEHpCt1wW9nh9ghaTjujDVswFoM&libraries=places"></script>
+<script>
+    function initializeAutocomplete() { // JS Section
+        var startInput = document.getElementById('start'); //grabs info from each field
+        var endInput = document.getElementById('end');
+
+        var options = {
+            types: ['geocode'],  // Suggest geographical locations only.
+            componentRestrictions: { country: 'ca' }  // If we want to restrict country
+        };
+
+        new google.maps.places.Autocomplete(startInput, options); // processes it with the api
+        new google.maps.places.Autocomplete(endInput, options);
+    }
+
+    window.onload = initializeAutocomplete;
+</script>
+
 {% endblock %}
