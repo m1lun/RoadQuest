@@ -1,6 +1,7 @@
-from django import forms    
+from django import forms
+from .models import RouteItem  
 
-class CreateNewRoute(forms.Form):
-    start = forms.CharField(label="Start", max_length=200)
-    end = forms.CharField(label="End", max_length=200)
-
+class RouteForm(forms.ModelForm):
+    class Meta:
+        model = RouteItem
+        fields = ['start', 'end']
