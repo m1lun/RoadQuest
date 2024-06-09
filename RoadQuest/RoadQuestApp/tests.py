@@ -18,8 +18,8 @@ def get_hotels(longitude, latitude):
     
 
 def main():
-    longitude = -122.97286378718171
-    latitude = 49.27818323982278
+    latitude = -122.97286378718171
+    longitude = 49.27818323982278
     
     try:
         hotels_data = get_hotels(latitude, longitude)
