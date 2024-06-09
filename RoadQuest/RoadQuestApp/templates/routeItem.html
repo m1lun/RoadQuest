@@ -1,10 +1,24 @@
-{% extends "base.html" %} {% block content %}
-<h1> RouteItem List </h1>
-<u1>
-    {% for todo in todos %}
-    <li>
-        {{ todo.title }}: {% if todo.completed %}Completed{% else %}Not Completed{% endif %}
-    </li>
-    {% endfor %}
-</u1>
+{% extends "base.html" %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="{% static 'style.css' %}">
+            <title>testpage</title>
+        </head>
+        <body>
+            <h1>HELLO</h1>
+            <div class="v11_2"></div>
+            <span class="v11_3">GO</span>
+            <div class="v2_12"></div>
+            <span class="v2_11">Road Quest</span>
+            <div class="v2_13"></div>
+            <span class="v2_15">From:</span>
+            <span class="v2_18">To:</span>
+            <div class="v2_19"></div>
+        </body>
+    </html>
 {% endblock %}
