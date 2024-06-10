@@ -1,109 +1,76 @@
 body {
-  font-size: 14px;
   background-image: url("routeImage.png");
   background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
+  background-position: top;
 }
-h1 {
-  color: rgb(4, 24, 245);
+
+.logo {
+  font-family: "Monomaniac One", sans-serif;
+  font-size: 14em;
+  font-weight: bold;
+  color: white;
   text-align: center;
-  margin-top: 50px;
+  margin-top: 90px;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 2px;
+  user-select: none;
 }
-.v11_2 {
-  width: 152px;
-  height: 152px;
-  background: rgba(0,255,56,1);
-  opacity: 1;
-  position: absolute;
-  top: 738px;
-  left: 644px;
+
+.gobutton {
+  font-family: Roboto, sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  background-color: green;
+  color: white;
+  border: none;
   border-radius: 50%;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  width: 200px;
+  height: 200px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6em;
+  user-select: none;
 }
-.v11_3 {
-  width: 121px;
-  color: rgba(255,255,255,1);
-  position: absolute;
-  top: 738px;
-  left: 671px;
-  font-family: Monomaniac One;
-  font-weight: Regular;
-  font-size: 96px;
-  opacity: 1;
-  text-align: left;
+
+.gobutton:hover {
+  background-color: darkgreen;
 }
-.v2_12 {
-  width: 212px;
-  height: 46px;
-  background: rgba(255,255,255,1);
-  opacity: 1;
+
+.center {
+  margin: 0;
   position: absolute;
-  top: 627px;
-  left: 328px;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
-  border-bottom-left-radius: 50px;
-  border-bottom-right-radius: 50px;
-  overflow: hidden;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
 }
-.v2_11 {
-  width: 970px;
-  color: url("../images/v2_11.png");
-  position: absolute;
-  top: 234px;
-  left: 311px;
-  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-  font-family: Monomaniac One;
-  font-weight: Regular;
-  font-size: 200px;
-  opacity: 1;
-  text-align: left;
+
+.locationbox {
+  display: flex;
+  gap: 25em;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8em;
 }
-.v2_13 {
-  width: 212px;
-  height: 46px;
-  background: rgba(255,255,255,1);
-  opacity: 1;
-  position: absolute;
-  top: 627px;
-  left: 921px;
-  border-top-left-radius: 50px;
-  border-top-right-radius: 50px;
-  border-bottom-left-radius: 50px;
-  border-bottom-right-radius: 50px;
-  overflow: hidden;
-}
-.v2_15 {
-  width: 150px;
-  color: url("../images/v2_15.png");
-  position: absolute;
-  top: 572px;
-  left: 328px;
-  font-family: Monomaniac One;
-  font-weight: Regular;
-  font-size: 40px;
-  opacity: 1;
-  text-align: left;
-}
-.v2_18 {
-  width: 150px;
-  color: url("../images/v2_18.png");
-  position: absolute;
-  top: 572px;
-  left: 921px;
-  font-family: Monomaniac One;
-  font-weight: Regular;
-  font-size: 40px;
-  opacity: 1;
-  text-align: left;
-}
-.v2_19 {
-  width: 160px;
-  background: url("../images/v2_19.png");
-  opacity: 1;
-  position: absolute;
-  top: 650px;
-  left: 636px;
-  border: 3px solid rgba(0,0,0,1);
+
+.inputbox {
+  font-family: Roboto, sans-serif;
+  font-size: 1.5em;
+  font-weight: 700;
+  border: 0;
+  border-radius: 5em;
+  width: 12em;
+  height: 60px;
+  outline: 0;
+  padding: 0 0.714em;
+  box-sizing: border-box;
+  box-shadow: 0 0.125em 0.3125em rgba(black, black, black, 0.3);
+  user-select: none;
+
+    &::placeholder {
+      color: gray;
+  }
+
 }
