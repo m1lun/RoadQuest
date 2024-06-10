@@ -1,4 +1,9 @@
 {% extends "base.html" %} {% block title %} Home Page {% endblock %}
 {% block content %}
-<p>this is the home page</p>
+<p>Click Here to Make Route</p>
+<a href="{% url 'route' %}">
+    <button type="button"> Go to Route Planner </button>
+
+</a>
+
 {% endblock %}
