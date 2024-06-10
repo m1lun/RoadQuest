@@ -1,7 +1,8 @@
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, redirect
 from .models import RouteItem
 from .forms import RouteForm
 from .utils import location_to_coords, routing
+from django.conf import settings
 
 
 # Create your views here.
@@ -14,6 +15,7 @@ def routeItem(request):
 
 # Save the start & end destinations
 def route(response):
+
     if response.method == "POST":
         form = RouteForm(response.POST)
         if form.is_valid():
@@ -37,6 +39,10 @@ def route(response):
 
     else:
         form = RouteForm()
-    return render(response, "main/route.html", {"form": form})
+
+    context = {
+        'google_key': settings.GOOGLE_KEY
+    }
+    return render(response, "main/route.html", {"form": form, **context})
 
 
