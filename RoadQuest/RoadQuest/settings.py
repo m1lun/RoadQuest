@@ -11,6 +11,16 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+GOOGLE_KEY = os.getenv("google_key")
+OWM_KEY = os.getenv("OWM_key")
+
+print(f"GOOGLE_MAPS_API_KEY: {GOOGLE_KEY}")
+print(f"OWM_KEY: {OWM_KEY}")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent

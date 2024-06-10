@@ -1,0 +1,62 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment directories
+venv/
+env/
+ENV/
+.venv/
+
+# VS Code settings
+.vscode/
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+db.sqlite3
+.DS_Store
+
+# Local configuration files
+.env
+.env.*
+*.local
+config/settings/local.py
+
+# Backup files
+*.bak
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+*.crdownload
+*.ini
+*.lnk
+*.suo
+
+# Python egg files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg-info/
+.installed.cfg
+
+# Distribution / packaging
+.Python
+develop-eggs/
+parts/
+sdist/
+var/
+*.egg
+lib64/
+pip-wheel-metadata/
+
