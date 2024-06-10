@@ -1,0 +1,76 @@
+body {
+  background-image: url("routeImage.png");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: top;
+}
+
+.logo {
+  font-family: "Monomaniac One", sans-serif;
+  font-size: 14em;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-top: 90px;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 2px;
+  user-select: none;
+}
+
+.gobutton {
+  font-family: Roboto, sans-serif;
+  font-size: 72px;
+  font-weight: 700;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 200px;
+  height: 200px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 6em;
+  user-select: none;
+}
+
+.gobutton:hover {
+  background-color: darkgreen;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.locationbox {
+  display: flex;
+  gap: 25em;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8em;
+}
+
+.inputbox {
+  font-family: Roboto, sans-serif;
+  font-size: 1.5em;
+  font-weight: 700;
+  border: 0;
+  border-radius: 5em;
+  width: 12em;
+  height: 60px;
+  outline: 0;
+  padding: 0 0.714em;
+  box-sizing: border-box;
+  box-shadow: 0 0.125em 0.3125em rgba(black, black, black, 0.3);
+  user-select: none;
+
+    &::placeholder {
+      color: gray;
+  }
+
+}
