@@ -18,25 +18,41 @@ body {
 }
 
 .gobutton {
-  font-family: Roboto, sans-serif;
+  font-family: "poppins", sans-serif;
   font-size: 72px;
   font-weight: 700;
-  background-color: green;
-  color: white;
+  background: transparent;
+  color: black;
   border: none;
-  border-radius: 50%;
-  width: 200px;
-  height: 200px;
+  border-radius: 10px;
+  width: 360px;
+  height: 95px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 2px solid black;
   margin-top: 6em;
   user-select: none;
 }
 
+.gobutton:after {
+  content: '»';
+  position: absolute;
+  opacity: 0;  
+  top: 420px;
+  right: -5px;
+  transition: 0.5s;
+}
 .gobutton:hover {
-  background-color: darkgreen;
+  padding-right: 50px;
+  padding-left:8px;
+  background-color: white;
+}
+
+.gobutton:hover:after {
+  opacity: 1;
+  right: 70px;
 }
 
 .center {
@@ -56,11 +72,10 @@ body {
 }
 
 .inputbox {
-  font-family: Roboto, sans-serif;
+  font-family: "poppins", sans-serif;
   font-size: 1.5em;
   font-weight: 700;
   border: 0;
-  border-radius: 5em;
   width: 12em;
   height: 60px;
   outline: 0;
@@ -69,10 +84,12 @@ body {
   box-shadow: 0 0.125em 0.3125em rgba(black, black, black, 0.3);
   user-select: none;
   background: transparent;
-  border: 2px solid white;
+  border: 2px solid black;
+  border-radius: 10px;
+
 
     &::placeholder {
-      color: white;
+      color: black;
   }
 
 }
