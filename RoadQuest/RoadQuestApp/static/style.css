@@ -68,9 +68,11 @@ body {
   box-sizing: border-box;
   box-shadow: 0 0.125em 0.3125em rgba(black, black, black, 0.3);
   user-select: none;
+  background: transparent;
+  border: 2px solid white;
 
     &::placeholder {
-      color: gray;
+      color: white;
   }
 
 }
