@@ -27,6 +27,8 @@ def route(response):
             start_coords = location_to_coords(start_location)
             end_coords = location_to_coords(end_location)
 
+            print("Finished getting Coords for endpoints")
+
             if start_coords and end_coords:
                 # Fetch routing information
                 routing(start_coords, end_coords)
