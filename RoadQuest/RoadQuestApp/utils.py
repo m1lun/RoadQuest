@@ -35,23 +35,38 @@ def location_to_coords(location_name):
 # start_coords: [latitude, longitude]
 # using OSRM API
 def routing(start_coords, end_coords):
-    
-    # fetch route waypoints with options for driving
-    response = requests.get(f"http://router.project-osrm.org/route/v1/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}?overview=full")
 
-    print("attempting:" f"http://router.project-osrm.org/route/v1/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}?overview=full")
-    
+    # Mapbox Directions API endpoint
+    base_url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]}, {end_coords[0]}"
+
+    # Parameters
+    params = {
+        'access_token': settings.MAPBOX_KEY, 
+        'geometries': 'geojson',  
+        'steps': 'true'  
+    }
+
+    # Send the GET request to Mapbox API
+    response = requests.get(base_url, params=params)
+
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
 
         if 'routes' in data and data['routes']:
-            # Print each route waypoint
-            for waypoint in data['waypoints']:
-                latitude, longitude = waypoint['location']
+            # Extract the first route
+            route = data['routes'][0]
+
+            # Extract waypoints from the route
+            waypoints = route['geometry']['coordinates']
+            for waypoint in waypoints:
+                longitude, latitude = waypoint
                 print("Latitude:", latitude)
                 print("Longitude:", longitude)
+
         else:
             print("No routes found.")
     else:
+        data = response.json()
+        print("API Message:", data['message'])
         print("Error:", response.status_code)
