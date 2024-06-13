@@ -4,7 +4,7 @@ from django.conf import settings
 # converts location to [latitude, longitude]
 # using OpenStreetMap Nominatim API
 def location_to_coords(location_name):
-
+    #test
     base_url = "http://api.openweathermap.org/geo/1.0/direct"
 
     params = {
