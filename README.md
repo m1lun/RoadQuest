@@ -23,7 +23,7 @@ Before running RoadQuest, ensure that the following dependencies are installed:
 
 Example `.env` file: <br />
 OWM_KEY=YOUR_OPENWEATHERMAP_API_KEY <br />
-google_key=YOUR_GOOGLE_MAPS_API_KEY
+google_key=YOUR_GOOGLE_MAPS_API_KEY <br />
 mapbox_key =YOUR_MAPBOX_API_KEY
 
 6. Before starting the server, migrate by running `python manage.py makemigrations` and `python manage.py migrate`.
