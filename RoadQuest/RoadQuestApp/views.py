@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from .models import RouteItem
 from .forms import RouteForm
-from .utils import location_to_coords, routing
+from .utils import location_to_coords, routing, get_restaurants
 from django.conf import settings
 
+COORD_LIMIT = 3
 
 # Create your views here.
 def home(request): 
@@ -31,8 +32,15 @@ def route(response):
 
             if start_coords and end_coords:
                 # Fetch routing information
-                routing(start_coords, end_coords)
+                # waypoints is array of [longitude][latitude]
+                waypoints = routing(start_coords, end_coords)
                 
+                for index, waypoint in enumerate(waypoints):
+                    # only select COORD_LIMIT amount of coordinates
+                    if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
+                        print(waypoint)
+                        get_restaurants(waypoint)
+
                 # Redirect to main mapping page
                 form.save()
                 return redirect("routeItem")
