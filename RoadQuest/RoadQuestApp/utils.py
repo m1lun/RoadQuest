@@ -37,7 +37,8 @@ def location_to_coords(location_name):
 def routing(start_coords, end_coords):
 
     # Mapbox Directions API endpoint
-    base_url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]}, {end_coords[0]}"
+    base_url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}"
+    print(f"attempting https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}")
 
     # Parameters
     params = {
@@ -64,9 +65,34 @@ def routing(start_coords, end_coords):
                 print("Latitude:", latitude)
                 print("Longitude:", longitude)
 
+            return waypoints
+
         else:
             print("No routes found.")
     else:
         data = response.json()
         print("API Message:", data['message'])
         print("Error:", response.status_code)
+
+# finds restaurants near coordinate [longitude][latitude]
+def get_restaurants(coordinate):
+
+    url = "https://api.yelp.com/v3/businesses/search"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {settings.YELP_KEY}"
+    }
+
+    params = {
+        "latitude": f"{coordinate[1]}",
+        "longitude": f"{coordinate[0]}",
+        "radius": f"4000",
+        "limit": 1,
+        "sort_by": "best_match"
+
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    print(response.text)
