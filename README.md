@@ -9,6 +9,7 @@ RoadQuest is an AI-assisted roadtrip planner that provides hotel and restaurant 
 Before running RoadQuest, ensure that the following dependencies are installed:
 
 - Django: `pip install django`
+- Amadeus: `pip install amadeus`
 - Python-dotenv: `pip install python-dotenv`
 - Requests: `pip install requests`
 
@@ -23,6 +24,7 @@ Before running RoadQuest, ensure that the following dependencies are installed:
 Example `.env` file: <br />
 OWM_KEY=YOUR_OPENWEATHERMAP_API_KEY <br />
 google_key=YOUR_GOOGLE_MAPS_API_KEY
+mapbox_key =YOUR_MAPBOX_API_KEY
 
 6. Before starting the server, migrate by running `python manage.py makemigrations` and `python manage.py migrate`.
 7. Start the Django development server by running `python manage.py runserver`.
