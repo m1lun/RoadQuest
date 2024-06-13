@@ -3,8 +3,8 @@ from .models import RouteItem
 from .forms import RouteForm
 from .utils import location_to_coords, routing
 from django.conf import settings
-
-
+from .amadeus_api import get_hotels
+COORD_LIMIT = 3
 # Create your views here.
 def home(request): 
     return render(request, "home.html")
@@ -31,7 +31,21 @@ def route(response):
 
             if start_coords and end_coords:
                 # Fetch routing information
-                routing(start_coords, end_coords)
+                waypoints = routing(start_coords, end_coords)     
+                list_length = len(waypoints)
+                    
+                if list_length >= 3:
+                    first = 0
+                    middle = list_length // 2
+                    last = list_length - 1
+                    selected = [first, middle, last]
+                
+                for i in selected:
+                    waypoint = waypoints[i]
+                    print(waypoint)
+                    latitude = waypoint[1]
+                    longitude = waypoint[0]
+                    get_hotels(latitude, longitude, radius=5)
                 
                 # Redirect to main mapping page
                 form.save()

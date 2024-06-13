@@ -12,6 +12,7 @@ def get_hotels(latitude, longitude, radius):
             longitude = longitude,
             radius = radius
         )
+        print(response.data)
         return response.data
     except ResponseError as error:
         raise error

@@ -63,7 +63,8 @@ def routing(start_coords, end_coords):
                 longitude, latitude = waypoint
                 print("Latitude:", latitude)
                 print("Longitude:", longitude)
-
+                
+            return waypoints
         else:
             print("No routes found.")
     else:
