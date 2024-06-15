@@ -12,6 +12,7 @@ Before running RoadQuest, ensure that the following dependencies are installed:
 - Amadeus: `pip install amadeus`
 - Python-dotenv: `pip install python-dotenv`
 - Requests: `pip install requests`
+- Folium: 'pip install folium'
 
 ## Usage
 
