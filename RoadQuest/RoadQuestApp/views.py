@@ -1,17 +1,15 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from .models import RouteItem, POI
 from .forms import RouteForm
 from .utils import location_to_coords, routing, get_restaurants, get_attractions, get_hotels
 from django.conf import settings
+import folium
 
 COORD_LIMIT = 3
 # Create your views here.
 def home(request): 
     return render(request, "home.html")
-
-def routeItem(request):
-    items = RouteItem.objects.all()
-    return render(request, "routeItem.html", {"routeItem": items})
 
 # Save the start & end destinations
 def route(response):
@@ -23,9 +21,17 @@ def route(response):
             start_location = form.cleaned_data['start']  # Get start location from form
             end_location = form.cleaned_data['end']  # Get end location from form
             
+            instance = form.save(commit=False)
+
             # Convert locations to coordinates
             start_coords = location_to_coords(start_location)
             end_coords = location_to_coords(end_location)
+
+            instance.start_lat = start_coords[0]
+            instance.start_lng = start_coords[1]
+            instance.end_lat = end_coords[0]
+            instance.end_lng = end_coords[1]
+            instance.save()
 
             print("Finished getting Coords for endpoints")
 
@@ -69,10 +75,10 @@ def route(response):
                 to_db(pois)
 
                 # Redirect to main mapping page
-                form.save()
-                return redirect("routeItem")
-            else:
-                return render(request, "error.html", {"message": "Error processing locations."})
+                url = reverse('mapping', kwargs={'start1': start_location, 'end1': end_location})
+                return redirect(url)
+            
+            return render(request, "error.html", {"message": "Error processing locations."})
 
     else:
         form = RouteForm()
@@ -81,6 +87,20 @@ def route(response):
         'google_key': settings.GOOGLE_KEY
     }
     return render(response, "main/route.html", {"form": form, **context})
+
+def mapping(request, start1, end1):
+    location = RouteItem.objects.get(start=start1, end=end1)
+    start_coord = location.get_start_coords()
+    end_coord = location.get_end_coords()
+
+    start_center = (start_coord[0] + end_coord[0]) / 2
+    end_center = (start_coord[1] + end_coord[1]) / 2
+
+    m = folium.Map(location=[start_center, end_center], zoom_start=8)
+
+    context = {'map': m._repr_html_()}
+
+    return render(request, "mapping.html", context)
 
 def to_db(pois):
     for poi in pois:
