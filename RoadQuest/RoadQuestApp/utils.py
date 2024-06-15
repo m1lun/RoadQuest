@@ -96,7 +96,32 @@ def get_restaurants(coordinate):
 
     response = requests.get(url, headers=headers, params=params)
 
-    print(response.text)
+    data = response.json()
+
+    pois = []
+    for business in data.get('businesses', []):
+        poi = {
+            'name': business.get('name'),
+            'type': ', '.join(business.get('categories', [{'title': ''}])[0]['title'].lower().split()), 
+            'address': ' '.join(business['location']['display_address']),
+            'city': business['location']['city'],
+            'state': business['location']['state'],
+            'postal_code': business['location']['zip_code'],
+            'country': business['location']['country'],
+            'latitude': business['coordinates']['latitude'],
+            'longitude': business['coordinates']['longitude'],
+            'phone_number': business.get('display_phone'),
+            'website': business.get('url'),
+            'rating': business.get('rating'),
+            'review_count': business.get('review_count'),
+            'price_level': len(business.get('price', '')) if business.get('price') else None,
+            'description': business.get('snippet_text', ''),
+            'amenities': ', '.join([feature for feature in business.get('features', [])]),
+        }
+        pois.append(poi)
+
+    return pois
+
     
 def get_attractions(lat, long):
     url = "https://api.opentripmap.com/0.1/en/places/radius"
