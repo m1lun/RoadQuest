@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from .models import RouteItem
 from .forms import RouteForm
-from .utils import location_to_coords, routing, get_restaurants, get_attractions
+from .utils import location_to_coords, routing, get_restaurants, get_attractions, get_hotels
 from django.conf import settings
-from .amadeus_api import get_hotels
+
 COORD_LIMIT = 3
 # Create your views here.
 def home(request): 
@@ -55,7 +55,7 @@ def route(response):
                         get_restaurants(waypoint)
                         attractions = get_attractions(waypoint[1], waypoint[0])
                         if attractions:
-                            print(attractions)
+                            print("attractions here:", attractions)
                 # Redirect to main mapping page
                 form.save()
                 return redirect("routeItem")
