@@ -20,6 +20,7 @@ GOOGLE_KEY = os.getenv("google_key")
 OWM_KEY = os.getenv("OWM_key")
 MAPBOX_KEY = os.getenv("mapbox_key")
 YELP_KEY = os.getenv("yelp_key")
+OPENTRIPMAP_KEY = os.getenv("opentripmap_key")
 
 # print(f"GOOGLE_MAPS_API_KEY: {GOOGLE_KEY}")
 # print(f"OWM_KEY: {OWM_KEY}")

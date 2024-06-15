@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import RouteItem
 from .forms import RouteForm
-from .utils import location_to_coords, routing, get_restaurants
+from .utils import location_to_coords, routing, get_restaurants, get_attractions
 from django.conf import settings
 from .amadeus_api import get_hotels
 COORD_LIMIT = 3
@@ -53,7 +53,9 @@ def route(response):
                     if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
                         print(waypoint)
                         get_restaurants(waypoint)
-
+                        attractions = get_attractions(waypoint[1], waypoint[0])
+                        if attractions:
+                            print(attractions)
                 # Redirect to main mapping page
                 form.save()
                 return redirect("routeItem")

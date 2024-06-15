@@ -96,3 +96,25 @@ def get_restaurants(coordinate):
     response = requests.get(url, headers=headers, params=params)
 
     print(response.text)
+    
+def get_attractions(lat, long):
+    url = "https://api.opentripmap.com/0.1/en/places/radius"
+    
+    params = {
+        'apikey': settings.OPENTRIPMAP_KEY,
+        'radius': 5000,
+        'lat': lat,
+        'lon': long,
+        'format': 'JSON'
+        
+    }
+    response = requests.get(url, params = params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        attractions = [place['name']for place in data if 'name' in place]
+        return attractions
+    
+    else: 
+        return None
+    
