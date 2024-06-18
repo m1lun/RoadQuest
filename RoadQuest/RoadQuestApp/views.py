@@ -39,23 +39,25 @@ def route(response):
                 # Fetch routing information
                 # waypoints is array of [longitude][latitude]
                 waypoints = waypoints = routing(start_coords, end_coords)     
-                list_length = len(waypoints)
+                # list_length = len(waypoints)
 
                 pois = []
-
+                pois2 = []
                 # Hotels    
-                if list_length >= 3:
-                    first = 0
-                    middle = list_length // 2
-                    last = list_length - 1
-                    selected = [first, middle, last]
+                # if list_length >= 3:
+                #     first = 0
+                #     middle = list_length // 2
+                #     last = list_length - 1
+                #     selected = [first, middle, last]
                 
-                for i in selected:
-                    waypoint = waypoints[i]
-                    print(waypoint)
-                    latitude = waypoint[1]
-                    longitude = waypoint[0]
-                    get_hotels(latitude, longitude, radius=5)
+                # for i in selected:
+                #     waypoint = waypoints[i]
+                #     print(waypoint)
+                #     latitude = waypoint[1]
+                #     longitude = waypoint[0]
+                #     hotels = get_hotels(latitude, longitude, radius=5)
+                    # for poi in hotels:
+                    #     pois.append(poi)
                 
                 # Restaurants and Attractions
                 for index, waypoint in enumerate(waypoints):
@@ -69,11 +71,12 @@ def route(response):
                             pois.append(poi)
 
                         attractions = get_attractions(waypoint[1], waypoint[0])
-                        if attractions:
-                            print("attractions here:", attractions)
+                        
+                        for poi in attractions:
+                            pois2.append(poi)
 
                 to_db(pois)
-
+                to_db(pois2)
                 # Redirect to main mapping page
                 url = reverse('mapping', kwargs={'start1': start_location, 'end1': end_location})
                 return redirect(url)

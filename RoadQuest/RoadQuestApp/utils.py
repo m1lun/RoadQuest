@@ -126,24 +126,120 @@ def get_restaurants(coordinate):
 def get_attractions(lat, long):
     url = "https://api.opentripmap.com/0.1/en/places/radius"
     
-    params = {
+    params_natural = {
         'apikey': settings.OPENTRIPMAP_KEY,
         'radius': 5000,
-        'lat': lat,
+        'lat': lat, 
         'lon': long,
-        'rate': 2,
+        'rate': 3,
+        'kinds': 'natural',
         'format': 'JSON'
         
     }
-    response = requests.get(url, params = params)
+    
+    params_cultural = {
+        'apikey': settings.OPENTRIPMAP_KEY,
+        'radius': 5000,
+        'lat': lat, 
+        'lon': long,
+        'rate': 3,
+        'kinds': 'cultural',
+        'format': 'JSON'
+        
+    }
+    
+    params_historic = {
+        'apikey': settings.OPENTRIPMAP_KEY,
+        'radius': 5000,
+        'lat': lat, 
+        'lon': long,
+        'rate': 3,
+        'kinds': 'historic',
+        'format': 'JSON'
+        
+    }
+    
+    params_historic_architecture = {
+        'apikey': settings.OPENTRIPMAP_KEY,
+        'radius': 5000,
+        'lat': lat, 
+        'lon': long,
+        'rate': 3,
+        'kinds': 'historic_architecture',
+        'format': 'JSON'
+        
+    }
+    
+    params_accomodations = {
+        'apikey': settings.OPENTRIPMAP_KEY,
+        'radius': 5000,
+        'lat': lat, 
+        'lon': long,
+        'rate': 3,
+        'kinds': 'accomodations',
+        'format': 'JSON'
+        
+    }
+    
+    pois = []
+
+    # Fetch natural attractions
+    response_natural = requests.get(url, params=params_natural)
+    pois.extend(process_attractions_response(response_natural))
+
+    # Fetch cultural attractions
+    response_cultural = requests.get(url, params=params_cultural)
+    pois.extend(process_attractions_response(response_cultural))
+
+    # Fetch historic attractions
+    response_historic = requests.get(url, params=params_historic)
+    pois.extend(process_attractions_response(response_historic))
+
+    response_historic_architecture = requests.get(url, params=params_historic_architecture)
+    pois.extend(process_attractions_response(response_historic_architecture))
+    
+    response_accomodations = requests.get(url, params=params_accomodations)
+    pois.extend(process_attractions_response(response_accomodations))
+    
+    return pois 
+
+    
+    
+def process_attractions_response(response):
+
+    # response = requests.get(url, params = params)
     
     if response.status_code == 200:
         data = response.json()
-        attractions = [place['name']for place in data if 'name' in place]
-        return attractions
-    
+        pois = []
+        for attractions in data:
+            poi = {
+                'name': attractions.get('name'),
+                'type': ', '.join(attractions.get('kinds', '').split(',')),
+                'address': None,  # Address not provided in the sample JSON
+                'city': None,  # City not provided in the sample JSON
+                'state': None,  # State not provided in the sample JSON
+                'postal_code': None,  # Postal code not provided in the sample JSON
+                'country': None,  # Country not provided in the sample JSON
+                'latitude': attractions['point']['lat'],
+                'longitude': attractions['point']['lon'],
+                'phone_number': None,  # Phone number not provided in the sample JSON
+                'website': None,  # Website not provided in the sample JSON
+                'rating': None,  # Rating not provided in the sample JSON
+                'review_count': None,  # Review count not provided in the sample JSON
+                'price_level': None,  # Price level not provided in the sample JSON
+                'description': None,  # Description not provided in the sample JSON
+                'amenities': None,  # Amenities not provided in the sample JSON
+            }
+            pois.append(poi)
+        print(response.text)
+        return pois
+
     else: 
-        return None
+        print(f"Error fetching attractions: Status code {response.status_code}")
+
+
+
     
 amadeus = Client(
         client_id='5vFjQOyy1Dmb5frlsK8PcGQOLgjMuLyZ',
@@ -157,8 +253,7 @@ def get_hotels(latitude, longitude, radius):
             longitude = longitude,
             radius = radius
         )
-        print(response.data[0])
-        return response.data
+        return response.data[0]
     except ResponseError as error:
         raise error
     
