@@ -122,124 +122,65 @@ def get_restaurants(coordinate):
 
     return pois
 
+def attraction_details(xid):
+    url = f"https://api.opentripmap.com/0.1/en/places/xid/{xid}"
+    params = {
+        'apikey': settings.OPENTRIPMAP_KEY
+    }
+    
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error:", response.status_code)    
     
 def get_attractions(lat, long):
     url = "https://api.opentripmap.com/0.1/en/places/radius"
     
-    params_natural = {
+    if lat is None or long is None:
+        print("Invalid latitude or longitude provided.")
+
+    params = {
         'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
+        'radius': 4000,
         'lat': lat, 
         'lon': long,
         'rate': 3,
-        'kinds': 'natural',
         'format': 'JSON'
-        
     }
-    
-    params_cultural = {
-        'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
-        'lat': lat, 
-        'lon': long,
-        'rate': 3,
-        'kinds': 'cultural',
-        'format': 'JSON'
-        
-    }
-    
-    params_historic = {
-        'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
-        'lat': lat, 
-        'lon': long,
-        'rate': 3,
-        'kinds': 'historic',
-        'format': 'JSON'
-        
-    }
-    
-    params_historic_architecture = {
-        'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
-        'lat': lat, 
-        'lon': long,
-        'rate': 3,
-        'kinds': 'historic_architecture',
-        'format': 'JSON'
-        
-    }
-    
-    params_accomodations = {
-        'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
-        'lat': lat, 
-        'lon': long,
-        'rate': 3,
-        'kinds': 'accomodations',
-        'format': 'JSON'
-        
-    }
-    
     pois = []
-
-    # Fetch natural attractions
-    response_natural = requests.get(url, params=params_natural)
-    pois.extend(process_attractions_response(response_natural))
-
-    # Fetch cultural attractions
-    response_cultural = requests.get(url, params=params_cultural)
-    pois.extend(process_attractions_response(response_cultural))
-
-    # Fetch historic attractions
-    response_historic = requests.get(url, params=params_historic)
-    pois.extend(process_attractions_response(response_historic))
-
-    response_historic_architecture = requests.get(url, params=params_historic_architecture)
-    pois.extend(process_attractions_response(response_historic_architecture))
-    
-    response_accomodations = requests.get(url, params=params_accomodations)
-    pois.extend(process_attractions_response(response_accomodations))
-    
+    kinds = ['natural', 'cultural', 'accomodations']
+    for kind in kinds:
+        params['kinds'] = kind
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            for attraction in data:
+                xid = attraction.get('xid')
+                details = attraction_details(xid)
+                if details:
+                    poi = {
+                        'name': attraction.get('name'),
+                        'type': ', '.join(attraction.get('kinds', '').split(',')),
+                        'address': f"{details.get('address', {}).get('house_number', '')} {details.get('address', {}).get('road', '') or details.get('address', {}).get('footway', '')}",
+                        'city': details.get('address', {}).get('city', None),
+                        'state': details.get('address', {}).get('state', None),
+                        'postal_code': details.get('address', {}).get('postcode', None),
+                        'country': details.get('address', {}).get('country', None),
+                        'latitude': attraction['point']['lat'],
+                        'longitude': attraction['point']['lon'],
+                        'phone_number': details.get('phone', None),
+                        'website': details.get('url', None),
+                        'rating': None, 
+                        'review_count': None,  
+                        'price_level': None, 
+                        'description': None,
+                        'amenities': None,  
+                    }
+                    pois.append(poi)
+        else:
+            print(f"Error fetching {kind} attractions: Status code {response.status_code}")
     return pois 
-
-    
-    
-def process_attractions_response(response):
-
-    # response = requests.get(url, params = params)
-    
-    if response.status_code == 200:
-        data = response.json()
-        pois = []
-        for attractions in data:
-            poi = {
-                'name': attractions.get('name'),
-                'type': ', '.join(attractions.get('kinds', '').split(',')),
-                'address': None,  # Address not provided in the sample JSON
-                'city': None,  # City not provided in the sample JSON
-                'state': None,  # State not provided in the sample JSON
-                'postal_code': None,  # Postal code not provided in the sample JSON
-                'country': None,  # Country not provided in the sample JSON
-                'latitude': attractions['point']['lat'],
-                'longitude': attractions['point']['lon'],
-                'phone_number': None,  # Phone number not provided in the sample JSON
-                'website': None,  # Website not provided in the sample JSON
-                'rating': None,  # Rating not provided in the sample JSON
-                'review_count': None,  # Review count not provided in the sample JSON
-                'price_level': None,  # Price level not provided in the sample JSON
-                'description': None,  # Description not provided in the sample JSON
-                'amenities': None,  # Amenities not provided in the sample JSON
-            }
-            pois.append(poi)
-        print(response.text)
-        return pois
-
-    else: 
-        print(f"Error fetching attractions: Status code {response.status_code}")
-
-
-
     
 amadeus = Client(
         client_id='5vFjQOyy1Dmb5frlsK8PcGQOLgjMuLyZ',

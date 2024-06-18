@@ -69,7 +69,7 @@ def route(response):
 
                         for poi in list:
                             pois.append(poi)
-
+                
                         attractions = get_attractions(waypoint[1], waypoint[0])
                         
                         for poi in attractions:
