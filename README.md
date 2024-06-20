@@ -23,7 +23,7 @@ Before running RoadQuest, ensure that the following dependencies are installed:
 5. Create a `.env` file in the project directory and add your API keys to it.
 
 Example `.env` file: <br />
-OWM_KEY=YOUR_OPENWEATHERMAP_API_KEY <br />
+OWM_key=YOUR_OPENWEATHERMAP_API_KEY <br />
 google_key=YOUR_GOOGLE_MAPS_API_KEY <br />
 mapbox_key=YOUR_MAPBOX_API_KEY <br />
 yelp_key=YOUR_YELP_API_KEY <br />
