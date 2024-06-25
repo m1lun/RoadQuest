@@ -107,10 +107,13 @@ def mapping(request, start1, end1):
 
     
     data = pd.DataFrame({
-        'lat': [start_coord[0], end_coord[0]],
-        'lon': [start_coord[1], end_coord[1]]
+        'lat': [coords[i][0] for i in range(len(coords))],
+        'lon': [coords[i][1] for i in range(len(coords))]
     })
-    
+    waypoint = pd.DataFrame({
+        'lat': [coord[1] for coord in waypoints],
+        'lon': [coord[0] for coord in waypoints]
+    })
 
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
     
