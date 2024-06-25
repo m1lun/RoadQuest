@@ -2,10 +2,10 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import RouteItem, POI
 from .forms import RouteForm
-from .utils import location_to_coords, routing, get_restaurants, get_attractions, get_hotels
+from .utils import location_to_coords, routing, get_restaurants, get_attractions
 from django.conf import settings
 import folium
-
+import pandas as pd
 COORD_LIMIT = 3
 # Create your views here.
 def home(request): 
@@ -38,11 +38,11 @@ def route(response):
             if start_coords and end_coords:
                 # Fetch routing information
                 # waypoints is array of [longitude][latitude]
-                waypoints = waypoints = routing(start_coords, end_coords)     
-                # list_length = len(waypoints)
-
+                waypoints = waypoints = routing(start_coords, end_coords)    
                 pois = []
                 pois2 = []
+                
+                # list_length = len(waypoints)
                 # Hotels    
                 # if list_length >= 3:
                 #     first = 0
@@ -99,8 +99,14 @@ def mapping(request, start1, end1):
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
 
+    data = pd.DataFrame({
+        'lat': [start_coord[0], end_coord[0]],
+        'lon': [start_coord[1], end_coord[1]]
+    })
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
-
+    for _, row in data.iterrows():
+        folium.Marker([row['lat'], row['lon']]).add_to(m)
+        
     context = {'map': m._repr_html_()}
 
     return render(request, "mapping.html", context)
