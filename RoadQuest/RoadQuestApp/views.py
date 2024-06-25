@@ -7,19 +7,18 @@ from django.conf import settings
 import folium
 import pandas as pd
 COORD_LIMIT = 3
-# Create your views here.
-def home(request): 
+
+def home(request):
     return render(request, "home.html")
 
 # Save the start & end destinations
 def route(response):
-
     if response.method == "POST":
         form = RouteForm(response.POST)
         if form.is_valid():
-
-            start_location = form.cleaned_data['start']  # Get start location from form
-            end_location = form.cleaned_data['end']  # Get end location from form
+            # Get start & end location from form
+            start_location = form.cleaned_data['start']
+            end_location = form.cleaned_data['end']
             
             instance = form.save(commit=False)
 
@@ -37,7 +36,7 @@ def route(response):
 
             if start_coords and end_coords:
                 # Fetch routing information
-                # waypoints is array of [longitude][latitude]
+                # Waypoints is an array of [longitude][latitude]
                 waypoints = waypoints = routing(start_coords, end_coords)    
                 pois = []
                 pois2 = []
@@ -59,9 +58,9 @@ def route(response):
                     # for poi in hotels:
                     #     pois.append(poi)
                 
-                # Restaurants and Attractions
+                # Restaurants & Attractions
                 for index, waypoint in enumerate(waypoints):
-                    # only select COORD_LIMIT amount of coordinates
+                    # Only select COORD_LIMIT amount of coordinates
                     if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
                         print(waypoint)
 
@@ -77,10 +76,11 @@ def route(response):
 
                 to_db(pois)
                 to_db(pois2)
+
                 # Redirect to main mapping page
                 url = reverse('mapping', kwargs={'start1': start_location, 'end1': end_location})
                 return redirect(url)
-            
+      
             return render(request, "error.html", {"message": "Error processing locations."})
 
     else:
@@ -92,9 +92,9 @@ def route(response):
     return render(response, "main/route.html", {"form": form, **context})
 
 def mapping(request, start1, end1):
-    location = RouteItem.objects.get(start=start1, end=end1)
-    start_coord = location.get_start_coords()
-    end_coord = location.get_end_coords()
+    location = RouteItem.objects.filter(start=start1, end=end1).first()
+
+    start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
@@ -107,22 +107,20 @@ def mapping(request, start1, end1):
 
     
     data = pd.DataFrame({
-        'lat':[coords[i][0] for i in range(len(coords))],
-        'lon':[coords[i][1] for i in range(len(coords))]
-    })
-    waypoint = pd.DataFrame({
-        'lat': [coord[1] for coord in waypoints],
-        'lon': [coord[0] for coord in waypoints]
+        'lat': [start_coord[0], end_coord[0]],
+        'lon': [start_coord[1], end_coord[1]]
     })
     
+
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
     
     for _, row in waypoint.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='red')).add_to(m)
         
+
     for _, row in data.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='blue')).add_to(m)
-        
+
     context = {'map': m._repr_html_()}
 
     return render(request, "mapping.html", context)
