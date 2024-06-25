@@ -13,6 +13,7 @@ Before running RoadQuest, ensure that the following dependencies are installed:
 - Python-dotenv: `pip install python-dotenv`
 - Requests: `pip install requests`
 - Folium: `pip install folium`
+- Pandas: `pip install pandas`
 
 ## Usage
 
