@@ -1,6 +1,6 @@
 import requests
 from django.conf import settings
-from amadeus import ResponseError, Client 
+# from amadeus import ResponseError, Client 
 
 # converts location to [latitude, longitude]
 # using OpenStreetMap Nominatim API
@@ -122,43 +122,79 @@ def get_restaurants(coordinate):
 
     return pois
 
+def attraction_details(xid):
+    url = f"https://api.opentripmap.com/0.1/en/places/xid/{xid}"
+    params = {
+        'apikey': settings.OPENTRIPMAP_KEY
+    }
+    
+    response = requests.get(url, params=params)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print("Error:", response.status_code)    
     
 def get_attractions(lat, long):
     url = "https://api.opentripmap.com/0.1/en/places/radius"
     
+    if lat is None or long is None:
+        print("Invalid latitude or longitude provided.")
+
     params = {
         'apikey': settings.OPENTRIPMAP_KEY,
-        'radius': 5000,
-        'lat': lat,
+        'radius': 4000,
+        'lat': lat, 
         'lon': long,
-        'rate': 2,
+        'rate': 3,
         'format': 'JSON'
-        
     }
-    response = requests.get(url, params = params)
+    pois = []
+    kinds = ['natural', 'cultural', 'accomodations']
+    for kind in kinds:
+        params['kinds'] = kind
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            data = response.json()
+            for attraction in data:
+                xid = attraction.get('xid')
+                details = attraction_details(xid)
+                if details:
+                    poi = {
+                        'name': attraction.get('name'),
+                        'type': ', '.join(attraction.get('kinds', '').split(',')),
+                        'address': f"{details.get('address', {}).get('house_number', '')} {details.get('address', {}).get('road', '') or details.get('address', {}).get('footway', '')}",
+                        'city': details.get('address', {}).get('city', None),
+                        'state': details.get('address', {}).get('state', None),
+                        'postal_code': details.get('address', {}).get('postcode', None),
+                        'country': details.get('address', {}).get('country', None),
+                        'latitude': attraction['point']['lat'],
+                        'longitude': attraction['point']['lon'],
+                        'phone_number': details.get('phone', None),
+                        'website': details.get('url', None),
+                        'rating': None, 
+                        'review_count': None,  
+                        'price_level': None, 
+                        'description': None,
+                        'amenities': None,  
+                    }
+                    pois.append(poi)
+        else:
+            print(f"Error fetching {kind} attractions: Status code {response.status_code}")
+    return pois 
     
-    if response.status_code == 200:
-        data = response.json()
-        attractions = [place['name']for place in data if 'name' in place]
-        return attractions
-    
-    else: 
-        return None
-    
-amadeus = Client(
-        client_id='5vFjQOyy1Dmb5frlsK8PcGQOLgjMuLyZ',
-        client_secret='u5D2xe5MoY1Vyi0j'
-)
+# amadeus = Client(
+#         client_id='5vFjQOyy1Dmb5frlsK8PcGQOLgjMuLyZ',
+#         client_secret='u5D2xe5MoY1Vyi0j'
+# )
 
-def get_hotels(latitude, longitude, radius):
-    try:
-        response = amadeus.reference_data.locations.hotels.by_geocode.get(
-            latitude = latitude,
-            longitude = longitude,
-            radius = radius
-        )
-        print(response.data[0])
-        return response.data
-    except ResponseError as error:
-        raise error
+# def get_hotels(latitude, longitude, radius):
+#     try:
+#         response = amadeus.reference_data.locations.hotels.by_geocode.get(
+#             latitude = latitude,
+#             longitude = longitude,
+#             radius = radius
+#         )
+#         return response.data[0]
+#     except ResponseError as error:
+#         raise error
     
