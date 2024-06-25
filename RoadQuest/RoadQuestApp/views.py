@@ -105,11 +105,16 @@ def mapping(request, start1, end1):
     for item in POI.objects.all():
         coords.append(item.get_coords())
 
+    start_end = pd.DataFrame({
+        'lat': [start_coord[0], end_coord[0]],
+        'lon': [start_coord[1], end_coord[1]]
+    })
     
     data = pd.DataFrame({
         'lat': [coords[i][0] for i in range(len(coords))],
         'lon': [coords[i][1] for i in range(len(coords))]
     })
+    
     waypoint = pd.DataFrame({
         'lat': [coord[1] for coord in waypoints],
         'lon': [coord[0] for coord in waypoints]
@@ -117,13 +122,18 @@ def mapping(request, start1, end1):
 
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
     
+    for _, row in start_end.iterrows():
+        folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='green')).add_to(m)
+        
     for _, row in waypoint.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='red')).add_to(m)
         
 
     for _, row in data.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='blue')).add_to(m)
-
+    
+    folium.PolyLine([(coord[1], coord[0]) for coord in waypoints], color="blue", weight=2.5, opacity=1).add_to(m)
+    
     context = {'map': m._repr_html_()}
 
     return render(request, "mapping.html", context)
