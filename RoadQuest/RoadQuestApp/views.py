@@ -95,19 +95,31 @@ def mapping(request, start1, end1):
     location = RouteItem.objects.filter(start=start1, end=end1).first()
 
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
-
+    
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
+    
+    waypoints = routing(start_coord, end_coord)
+    
+    coords = []
+    for item in POI.objects.all():
+        coords.append(item.get_coords())
 
+    
     data = pd.DataFrame({
         'lat': [start_coord[0], end_coord[0]],
         'lon': [start_coord[1], end_coord[1]]
     })
+    
 
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
+    
+    for _, row in waypoint.iterrows():
+        folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='red')).add_to(m)
+        
 
     for _, row in data.iterrows():
-        folium.Marker([row['lat'], row['lon']]).add_to(m)
+        folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='blue')).add_to(m)
 
     context = {'map': m._repr_html_()}
 
