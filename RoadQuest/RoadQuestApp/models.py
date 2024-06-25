@@ -40,3 +40,6 @@ class POI(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_coords(self):
+        return (self.latitude, self.longitude)
