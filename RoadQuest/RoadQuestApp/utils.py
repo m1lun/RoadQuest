@@ -75,54 +75,9 @@ def routing(start_coords, end_coords):
         print("API Message:", data['message'])
         print("Error:", response.status_code)
 
-# find restaurants near coordinate [longitude][latitude]
-def get_restaurants(coordinate):
-
-    url = "https://api.yelp.com/v3/businesses/search"
-
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {settings.YELP_KEY}"
-    }
-
-    params = {
-        "latitude": f"{coordinate[1]}",
-        "longitude": f"{coordinate[0]}",
-        "radius": f"4000",
-        "limit": 1,
-        "sort_by": "best_match"
-    }
-
-    response = requests.get(url, headers=headers, params=params)
-
-    data = response.json()
-
-    pois = []
-    for business in data.get('businesses', []):
-        poi = {
-            'name': business.get('name'),
-            'type': ', '.join(business.get('categories', [{'title': ''}])[0]['title'].lower().split()), 
-            'address': ' '.join(business['location']['display_address']),
-            'city': business['location']['city'],
-            'state': business['location']['state'],
-            'postal_code': business['location']['zip_code'],
-            'country': business['location']['country'],
-            'latitude': business['coordinates']['latitude'],
-            'longitude': business['coordinates']['longitude'],
-            'phone_number': business.get('display_phone'),
-            'website': business.get('url'),
-            'rating': business.get('rating'),
-            'review_count': business.get('review_count'),
-            'price_level': len(business.get('price', '')) if business.get('price') else None,
-            'description': business.get('snippet_text', ''),
-            'amenities': ', '.join([feature for feature in business.get('features', [])]),
-        }
-        pois.append(poi)
-
-    return pois
-
 def attraction_details(xid):
     url = f"https://api.opentripmap.com/0.1/en/places/xid/{xid}"
+
     params = {
         'apikey': settings.OPENTRIPMAP_KEY
     }
@@ -147,6 +102,7 @@ def get_attractions(lat, long):
         'rate': 3,
         'format': 'JSON'
     }
+
     pois = []
     kinds = ['natural', 'cultural', 'accomodations']
     for kind in kinds:
@@ -179,7 +135,77 @@ def get_attractions(lat, long):
                     pois.append(poi)
         else:
             print(f"Error fetching {kind} attractions: Status code {response.status_code}")
-    return pois 
+    return pois
+
+def get_restaurants(coordinate):
+    api_key = settings.GOOGLE_KEY
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+
+    params = {
+        "location": f"{coordinate[1]},{coordinate[0]}" ,
+        "radius": 10000,
+        "type": "restaurant",
+        "key": api_key
+    }
+    
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        pois = []
+        for restaurant in data.get("results", []):
+            poi = {
+                "name": restaurant.get("name"),
+                "address": restaurant.get("vicinity"),
+                "latitude": restaurant["geometry"]["location"]["lat"],
+                "longitude": restaurant["geometry"]["location"]["lng"],
+                "price_level": restaurant.get("price_level"),
+                "rating": restaurant.get("rating"),
+                "review_count": restaurant.get("user_ratings_total"),
+                "type": "restaurant"
+            }
+            pois.append(poi)
+        print(pois)
+
+    else:
+        print("Error:", response.status_code)
+
+    return pois
+
+def get_hotels(coordinate):
+    api_key = settings.GOOGLE_KEY
+    url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+
+    params = {
+        "location": f"{coordinate[1]},{coordinate[0]}" ,
+        "radius": 10000,
+        "type": "lodging",
+        "key": api_key
+    }
+    
+    response = requests.get(url, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        pois = []
+        for hotel in data.get("results", []):
+            poi = {
+                "name": hotel.get("name"),
+                "address": hotel.get("vicinity"),
+                "latitude": hotel["geometry"]["location"]["lat"],
+                "longitude": hotel["geometry"]["location"]["lng"],
+                "price_level": hotel.get("price_level"),
+                "rating": hotel.get("rating"),
+                "review_count": hotel.get("user_ratings_total"),
+                "type": "lodging"
+            }
+            pois.append(poi)
+        print(pois)
+
+    else:
+        print("Error:", response.status_code)
+
+    return pois
 
 # amadeus = Client(
 #         client_id='5vFjQOyy1Dmb5frlsK8PcGQOLgjMuLyZ',
@@ -196,3 +222,48 @@ def get_attractions(lat, long):
 #         return response.data[0]
 #     except ResponseError as error:
 #         raise error
+
+# def get_restaurants(coordinate):
+
+#     url = "https://api.yelp.com/v3/businesses/search"
+
+#     headers = {
+#         "accept": "application/json",
+#         "Authorization": f"Bearer {settings.YELP_KEY}"
+#     }
+
+#     params = {
+#         "latitude": f"{coordinate[1]}",
+#         "longitude": f"{coordinate[0]}",
+#         "radius": f"4000",
+#         "limit": 1,
+#         "sort_by": "best_match"
+#     }
+
+#     response = requests.get(url, headers=headers, params=params)
+
+#     data = response.json()
+
+#     pois = []
+#     for business in data.get('businesses', []):
+#         poi = {
+#             'name': business.get('name'),
+#             'type': ', '.join(business.get('categories', [{'title': ''}])[0]['title'].lower().split()), 
+#             'address': ' '.join(business['location']['display_address']),
+#             'city': business['location']['city'],
+#             'state': business['location']['state'],
+#             'postal_code': business['location']['zip_code'],
+#             'country': business['location']['country'],
+#             'latitude': business['coordinates']['latitude'],
+#             'longitude': business['coordinates']['longitude'],
+#             'phone_number': business.get('display_phone'),
+#             'website': business.get('url'),
+#             'rating': business.get('rating'),
+#             'review_count': business.get('review_count'),
+#             'price_level': len(business.get('price', '')) if business.get('price') else None,
+#             'description': business.get('snippet_text', ''),
+#             'amenities': ', '.join([feature for feature in business.get('features', [])]),
+#         }
+#         pois.append(poi)
+
+#     return pois
