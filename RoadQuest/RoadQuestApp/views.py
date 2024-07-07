@@ -64,7 +64,7 @@ def route(request):
 
                 print(f"Sent {len(waypoints)} Google API requests for all POIs")
 
-                to_db(pois)
+                to_db(pois, user_id)
 
                 # Redirect to main mapping page
                 url = reverse('mapping', kwargs={'start1': start_location, 'end1': end_location})

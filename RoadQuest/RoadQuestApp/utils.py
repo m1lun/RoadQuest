@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 
-SEARCH_RADIUS = 10000
+SEARCH_RADIUS = 20000
 
 # convert location to [latitude, longitude]
 # using OpenStreetMap Nominatim API
@@ -70,10 +70,6 @@ def routing(start_coords, end_coords):
             for leg in route.get('legs', []):
                 if 'annotation' in leg and 'distance' in leg['annotation']:
                     distances.extend(leg['annotation']['distance'])
-
-            # Print distances between each pair of coordinates
-            for i in range(len(distances)):
-                print(f"Distance from point {i} to point {i+1}: {distances[i]} meters")
 
             refined_waypoints = [waypoints[0]]
             refined_distances = [0.0]
