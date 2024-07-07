@@ -53,6 +53,7 @@
         <span class="closebtn" onclick="closePanel()">&times;</span>
         <div id="poi-details">
             <h2>Place of Interest</h2>
+            <img id="poi-photo" alt="POI Photo">
             <p><strong>Name:</strong> <span id="poi-name"></span></p>
             <p><strong>Type:</strong> <span id="poi-type"></span></p>
             <p><strong>Address:</strong> <span id="poi-address"></span></p>
@@ -78,7 +79,15 @@
                 document.getElementById('poi-name').innerText = '{{ poi.name }}';
                 document.getElementById('poi-type').innerText = '{{ poi.type }}';
                 document.getElementById('poi-address').innerText = '{{ poi.address }}';
-                // ADD MORE ONCE MORE ATTRIBUTES FOUND
+
+                const photoElement = document.getElementById('poi-photo');
+                if (details.photo) {
+                    photoElement.src = '{{ poi.photo }}';
+                    photoElement.style.display = 'block'; 
+                } else {
+                    photoElement.style.display = 'none'; 
+                }
+
             });
         {% endfor %}
 

@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import RouteItem, POI
 from .forms import RouteForm
-from .utils import location_to_coords, routing, get_restaurants, get_hotels
+from .utils import location_to_coords, routing, get_pois
 from django.conf import settings
 import folium
 import pandas as pd
@@ -40,16 +40,12 @@ def route(response):
                 pois = []
                 
                 for index, waypoint in enumerate(waypoints):
-                    if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
+                    # if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
                         print(waypoint)
 
-                        restaurants = get_restaurants(waypoint)
-                        for poi in restaurants:
+                        google_pois = get_pois(waypoint)
+                        for poi in google_pois:
                             pois.append(poi)
-
-                        hotels = get_hotels(waypoint)
-                        for poi in hotels:
-                            pois2.append(poi)
 
                 to_db(pois)
 
@@ -82,7 +78,6 @@ def mapping(request, start1, end1):
     
     pois = POI.objects.all()
 
-    # Example: Set initial map center and zoom
     map_center = [start_center, end_center]
     zoom_level = 8
 
