@@ -6,21 +6,32 @@ from .utils import location_to_coords, routing, get_pois
 from django.conf import settings
 import folium
 import pandas as pd
+import uuid
 
 COORD_LIMIT = 3
 
 def home(request):
     return render(request, "home.html")
 
-def route(response):
-    if response.method == "POST":
-        form = RouteForm(response.POST)
+def get_or_create_session_user_id(request):
+    if 'user_id' not in request.session:
+        request.session['user_id'] = str(uuid.uuid4())
+    return request.session['user_id']
+
+# Save the start & end destinations
+def route(request):
+    
+    user_id = get_or_create_session_user_id(request)
+    
+    if request.method == "POST":
+        form = RouteForm(request.POST)
         if form.is_valid():
             # Get start & end location from form
             start_location = form.cleaned_data['start']
             end_location = form.cleaned_data['end']
             
             instance = form.save(commit=False)
+            instance.user_id = user_id
 
             # Convert locations to coordinates
             start_coords = location_to_coords(start_location)
@@ -67,10 +78,11 @@ def route(response):
     context = {
         'google_key': settings.GOOGLE_KEY
     }
-    return render(response, "main/route.html", {"form": form, **context})
+    return render(request, "main/route.html", {"form": form, **context})
 
 def mapping(request, start1, end1):
-    location = RouteItem.objects.filter(start=start1, end=end1).first()
+    user_id = get_or_create_session_user_id(request)
+    location = RouteItem.objects.filter(user_id=user_id, start=start1, end=end1).first()
 
     if not location:
         return render(request, "error.html", {"message": "Route not found."})
@@ -82,7 +94,9 @@ def mapping(request, start1, end1):
     
     waypoints = routing(start_coord, end_coord)
     
-    pois = POI.objects.all()
+
+    pois = POI.objects.filter(user_id=user_id)
+        
 
     map_center = [start_center, end_center]
     zoom_level = 8
@@ -92,11 +106,16 @@ def mapping(request, start1, end1):
         'map_center': map_center,
         'zoom_level': zoom_level,
     }
+
+    RouteItem.objects.filter(user_id=user_id).delete()
+    POI.objects.filter(user_id=user_id).delete()
+
     return render(request, 'mapping.html', context)
 
-def to_db(pois):
+def to_db(pois, user_id):
     for poi in pois:
         POI.objects.update_or_create(
+            user_id = user_id,
             name=poi['name'],
             defaults={
                 'type': poi['type'],
