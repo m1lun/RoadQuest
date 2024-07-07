@@ -1,7 +1,96 @@
-{% extends "base.html" %} {% block title %} Mapping Page {% endblock %}
-{% block content %}
 <!DOCTYPE html>
-    <html lang="en">
-        {{ map|safe }}
-    </html>
-{% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 100vh;
+        }
+
+        #side-panel {
+            width: 300px;
+            position: fixed;
+            top: 0;
+            right: -300px;
+            background: linear-gradient(to right, #6dd5ed, #2193b0); /* Example gradient */
+            overflow-x: hidden;
+            color: white;
+            transition: right 0.5s;
+            padding: 20px;
+            height: 100%;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        #side-panel.open {
+            right: 0;
+        }
+
+        #side-panel .closebtn {
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: white;
+        }
+
+        
+
+        #poi-details {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="side-panel">
+        <span class="closebtn" onclick="closePanel()">&times;</span>
+        <div id="poi-details">
+            <h2>Place of Interest</h2>
+            <p><strong>Name:</strong> <span id="poi-name"></span></p>
+            <p><strong>Type:</strong> <span id="poi-type"></span></p>
+            <p><strong>Address:</strong> <span id="poi-address"></span></p>
+            <!-- Other details once terry finishes google -->
+        </div>
+    </div>
+
+    <script>
+        var map = L.map('map').setView([{{ map_center.0 }}, {{ map_center.1 }}], {{ zoom_level }});
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Adds POIs dynamically
+        {% for poi in pois %}
+            var marker = L.marker([{{ poi.latitude }}, {{ poi.longitude }}]).addTo(map);
+            marker.bindPopup("<b>{{ poi.name }}</b>");
+
+            marker.on('click', function(e) {
+                // Update side panel with marker details
+                openPanel();
+                document.getElementById('poi-name').innerText = '{{ poi.name }}';
+                document.getElementById('poi-type').innerText = '{{ poi.type }}';
+                document.getElementById('poi-address').innerText = '{{ poi.address }}';
+                // ADD MORE ONCE MORE ATTRIBUTES FOUND
+            });
+        {% endfor %}
+
+        // Open side panel
+        function openPanel() {
+            document.getElementById("side-panel").classList.add('open');
+        }
+
+        // Close side panel
+        function closePanel() {
+            document.getElementById("side-panel").classList.remove('open');
+        }
+    </script>
+</body>
+</html>
