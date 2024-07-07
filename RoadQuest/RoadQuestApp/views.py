@@ -6,21 +6,32 @@ from .utils import location_to_coords, routing, get_restaurants, get_hotels
 from django.conf import settings
 import folium
 import pandas as pd
+import uuid
+
 COORD_LIMIT = 3
 
 def home(request):
     return render(request, "home.html")
 
+def get_or_create_session_user_id(request):
+    if 'user_id' not in request.session:
+        request.session['user_id'] = str(uuid.uuid4())
+    return request.session['user_id']
+
 # Save the start & end destinations
-def route(response):
-    if response.method == "POST":
-        form = RouteForm(response.POST)
+def route(request):
+    
+    user_id = get_or_create_session_user_id(request)
+    
+    if request.method == "POST":
+        form = RouteForm(request.POST)
         if form.is_valid():
             # Get start & end location from form
             start_location = form.cleaned_data['start']
             end_location = form.cleaned_data['end']
             
             instance = form.save(commit=False)
+            instance.user_id = user_id
 
             # Convert locations to coordinates
             start_coords = location_to_coords(start_location)
@@ -41,23 +52,6 @@ def route(response):
                 pois = []
                 pois2 = []
                 
-                # list_length = len(waypoints)
-                # Hotels    
-                # if list_length >= 3:
-                #     first = 0
-                #     middle = list_length // 2
-                #     last = list_length - 1
-                #     selected = [first, middle, last]
-                
-                # for i in selected:
-                #     waypoint = waypoints[i]
-                #     print(waypoint)
-                #     latitude = waypoint[1]
-                #     longitude = waypoint[0]
-                #     hotels = get_hotels(latitude, longitude, radius=5)
-                    # for poi in hotels:
-                    #     pois.append(poi)
-                
                 # Restaurants & Attractions
                 for index, waypoint in enumerate(waypoints):
                     # Only select COORD_LIMIT amount of coordinates
@@ -72,8 +66,8 @@ def route(response):
                         for poi in hotels:
                             pois2.append(poi)
 
-                to_db(pois)
-                to_db(pois2)
+                to_db(pois, user_id)
+                to_db(pois2, user_id)
 
                 # Redirect to main mapping page
                 url = reverse('mapping', kwargs={'start1': start_location, 'end1': end_location})
@@ -87,10 +81,11 @@ def route(response):
     context = {
         'google_key': settings.GOOGLE_KEY
     }
-    return render(response, "main/route.html", {"form": form, **context})
+    return render(request, "main/route.html", {"form": form, **context})
 
 def mapping(request, start1, end1):
-    location = RouteItem.objects.filter(start=start1, end=end1).first()
+    user_id = get_or_create_session_user_id(request)
+    location = RouteItem.objects.filter(user_id=user_id, start=start1, end=end1).first()
 
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     
@@ -100,7 +95,7 @@ def mapping(request, start1, end1):
     waypoints = routing(start_coord, end_coord)
     
     info = []
-    for item in POI.objects.all():
+    for item in POI.objects.filter(user_id = user_id):
         info.append({"name": item.get_name(), "type": item.get_type(), "coords": item.get_coords()})
     
     waypoint = pd.DataFrame({
@@ -109,9 +104,6 @@ def mapping(request, start1, end1):
     })
 
     m = folium.Map(location=[start_center, end_center], zoom_start=8)
-    
-    for _, row in start_end.iterrows():
-        folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='green')).add_to(m)
         
     for _, row in waypoint.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='red')).add_to(m)
@@ -120,12 +112,16 @@ def mapping(request, start1, end1):
         folium.Marker(item.get("coords"), popup=item.get("name"), icon=folium.Icon(color='blue')).add_to(m)
 
     context = {'map': m._repr_html_()}
+    
+    RouteItem.objects.filter(user_id=user_id).delete()
+    POI.objects.filter(user_id=user_id).delete()
 
     return render(request, "mapping.html", context)
 
-def to_db(pois):
+def to_db(pois, user_id):
     for poi in pois:
         POI.objects.update_or_create(
+            user_id = user_id,
             name=poi['name'],
             defaults={
                 'type': poi['type'],

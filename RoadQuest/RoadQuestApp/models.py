@@ -1,7 +1,9 @@
 from django.db import models
+import uuid
 
 # Create your models here.
 class RouteItem(models.Model):
+    user_id = models.UUIDField(default=uuid.uuid4, editable=False)
     start = models.CharField(max_length=200)
     end = models.CharField(max_length=200)
     start_lat = models.FloatField(blank=True, null=True)
@@ -19,6 +21,7 @@ class RouteItem(models.Model):
         return (self.end_lat, self.end_lng)
     
 class POI(models.Model):
+    user_id = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=100)  # e.g., 'restaurant', 'hotel'
     address = models.CharField(max_length=255, null=True, blank=True)
