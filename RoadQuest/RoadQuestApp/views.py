@@ -60,7 +60,7 @@ def route(request):
                     for poi in google_pois:
                         pois.append(poi)
 
-                    print(f"Found POIS for waypoint: {index} / {len(waypoints)}")
+                    print(f"Found POIS for waypoint: {index + 1} / {len(waypoints)}")
 
                 print(f"Sent {len(waypoints)} Google API requests for all POIs")
 
