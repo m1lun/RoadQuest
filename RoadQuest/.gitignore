@@ -12,6 +12,9 @@ ENV/
 # VS Code settings
 .vscode/
 
+# Temporary map
+map.html
+
 # Django stuff:
 *.log
 *.pot
