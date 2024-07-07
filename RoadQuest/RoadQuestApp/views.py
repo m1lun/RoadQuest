@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from .models import RouteItem, POI
 from .forms import RouteForm
-from .utils import location_to_coords, routing, get_restaurants, get_attractions
+from .utils import location_to_coords, routing, get_restaurants, get_hotels
 from django.conf import settings
 import folium
 import pandas as pd
@@ -64,14 +64,12 @@ def route(response):
                     if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
                         print(waypoint)
 
-                        list = get_restaurants(waypoint)
-
-                        for poi in list:
+                        restaurants = get_restaurants(waypoint)
+                        for poi in restaurants:
                             pois.append(poi)
-                
-                        attractions = get_attractions(waypoint[1], waypoint[0])
-                        
-                        for poi in attractions:
+
+                        hotels = get_hotels(waypoint)
+                        for poi in hotels:
                             pois2.append(poi)
 
                 to_db(pois)
@@ -101,19 +99,9 @@ def mapping(request, start1, end1):
     
     waypoints = routing(start_coord, end_coord)
     
-    coords = []
+    info = []
     for item in POI.objects.all():
-        coords.append(item.get_coords())
-
-    start_end = pd.DataFrame({
-        'lat': [start_coord[0], end_coord[0]],
-        'lon': [start_coord[1], end_coord[1]]
-    })
-    
-    data = pd.DataFrame({
-        'lat': [coords[i][0] for i in range(len(coords))],
-        'lon': [coords[i][1] for i in range(len(coords))]
-    })
+        info.append({"name": item.get_name(), "type": item.get_type(), "coords": item.get_coords()})
     
     waypoint = pd.DataFrame({
         'lat': [coord[1] for coord in waypoints],
@@ -128,12 +116,9 @@ def mapping(request, start1, end1):
     for _, row in waypoint.iterrows():
         folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='red')).add_to(m)
         
+    for item in info:
+        folium.Marker(item.get("coords"), popup=item.get("name"), icon=folium.Icon(color='blue')).add_to(m)
 
-    for _, row in data.iterrows():
-        folium.Marker([row['lat'], row['lon']],icon=folium.Icon(color='blue')).add_to(m)
-    
-    folium.PolyLine([(coord[1], coord[0]) for coord in waypoints], color="blue", weight=2.5, opacity=1).add_to(m)
-    
     context = {'map': m._repr_html_()}
 
     return render(request, "mapping.html", context)
@@ -145,18 +130,10 @@ def to_db(pois):
             defaults={
                 'type': poi['type'],
                 'address': poi['address'],
-                'city': poi['city'],
-                'state': poi['state'],
-                'postal_code': poi['postal_code'],
-                'country': poi['country'],
                 'latitude': poi['latitude'],
                 'longitude': poi['longitude'],
-                'phone_number': poi['phone_number'],
-                'website': poi['website'],
                 'rating': poi['rating'],
                 'review_count': poi['review_count'],
                 'price_level': poi['price_level'],
-                'description': poi['description'],
-                'amenities': poi['amenities'],
             }
         )
