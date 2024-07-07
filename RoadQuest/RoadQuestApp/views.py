@@ -91,13 +91,11 @@ def mapping(request, start1, end1):
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
-    
-    waypoints = routing(start_coord, end_coord)
-    
 
-    pois = POI.objects.filter(user_id=user_id)
+    pois = list(POI.objects.filter(user_id=user_id))
+
+    print(f"Gathered {len(pois)} out of {len(POI.objects.all())} total POIs")
         
-
     map_center = [start_center, end_center]
     zoom_level = 8
 
@@ -107,10 +105,14 @@ def mapping(request, start1, end1):
         'zoom_level': zoom_level,
     }
 
-    RouteItem.objects.filter(user_id=user_id).delete()
-    POI.objects.filter(user_id=user_id).delete()
+    delete_pois(user_id)
 
     return render(request, 'mapping.html', context)
+
+def delete_pois(user_id):
+    RouteItem.objects.filter(user_id=user_id).delete()
+    POI.objects.filter(user_id=user_id).delete()
+    print(f"Deleted POIS for {user_id}")
 
 def to_db(pois, user_id):
     for poi in pois:
