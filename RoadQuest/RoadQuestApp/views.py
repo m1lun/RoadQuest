@@ -37,15 +37,21 @@ def route(response):
             if start_coords and end_coords:
                 # Fetch routing information
                 waypoints = routing(start_coords, end_coords)
+
+                print(f"Finished getting Coords for {len(waypoints)} intermediate points")
+
                 pois = []
                 
                 for index, waypoint in enumerate(waypoints):
                     # if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
-                        print(waypoint)
 
-                        google_pois = get_pois(waypoint)
-                        for poi in google_pois:
-                            pois.append(poi)
+                    google_pois = get_pois(waypoint)
+                    for poi in google_pois:
+                        pois.append(poi)
+
+                    print(f"Found POIS for waypoint: {index} / {len(waypoints)}")
+
+                print(f"Sent {len(waypoints)} Google API requests for all POIs")
 
                 to_db(pois)
 

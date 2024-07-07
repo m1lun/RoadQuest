@@ -1,6 +1,7 @@
 import requests
 from django.conf import settings
-# from amadeus import ResponseError, Client 
+
+SEARCH_RADIUS = 10000
 
 # convert location to [latitude, longitude]
 # using OpenStreetMap Nominatim API
@@ -45,7 +46,9 @@ def routing(start_coords, end_coords):
     params = {
         'access_token': settings.MAPBOX_KEY, 
         'geometries': 'geojson',  
-        'steps': 'true'  
+        'annotations': 'distance',
+        'overview': 'full'
+          
     }
 
     # send the GET request to Mapbox API
@@ -62,7 +65,37 @@ def routing(start_coords, end_coords):
             # extract waypoints from the route
             waypoints = route['geometry']['coordinates']
 
-            return waypoints
+            distances = []
+
+            for leg in route.get('legs', []):
+                if 'annotation' in leg and 'distance' in leg['annotation']:
+                    distances.extend(leg['annotation']['distance'])
+
+            # Print distances between each pair of coordinates
+            for i in range(len(distances)):
+                print(f"Distance from point {i} to point {i+1}: {distances[i]} meters")
+
+            refined_waypoints = [waypoints[0]]
+            refined_distances = [0.0]
+            current_distance = 0.0
+            last_added_index = 0
+
+            for i in range(1, len(waypoints)):
+                segment_distance = distances[i - 1]
+                current_distance += segment_distance
+
+                # refines waypoints so they are decently spaced out
+                if current_distance >= SEARCH_RADIUS * 2.0:
+                    refined_waypoints.append(waypoints[i])
+                    refined_distances.append(current_distance)
+                    current_distance = 0.0
+                    last_added_index = i
+
+            if last_added_index != len(waypoints) - 1:
+                refined_waypoints.append(waypoints[-1])
+                refined_distances.append(sum(distances[last_added_index:]))
+
+            return refined_waypoints
 
         else:
             print("No routes found.")
@@ -139,7 +172,7 @@ def get_pois(coordinate):
 
     params = {
         "location": f"{coordinate[1]},{coordinate[0]}" ,
-        "radius": 10000,
+        "radius": SEARCH_RADIUS,
         "key": api_key
     }
     
