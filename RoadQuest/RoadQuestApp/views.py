@@ -93,7 +93,8 @@ def mapping(request, start1, end1):
     end_center = (start_coord[1] + end_coord[1]) / 2
 
     pois = list(POI.objects.filter(user_id=user_id))
-
+    waypoints  = routing(start_coord, end_coord)
+    
     print(f"Gathered {len(pois)} out of {len(POI.objects.all())} total POIs")
         
     map_center = [start_center, end_center]
@@ -103,6 +104,7 @@ def mapping(request, start1, end1):
         'pois': pois,
         'map_center': map_center,
         'zoom_level': zoom_level,
+        'waypoints' : waypoints
     }
 
     delete_pois(user_id)

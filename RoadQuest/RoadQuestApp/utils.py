@@ -1,7 +1,7 @@
 import requests
 from django.conf import settings
 
-SEARCH_RADIUS = 20000
+SEARCH_RADIUS = 10000
 
 # convert location to [latitude, longitude]
 # using OpenStreetMap Nominatim API

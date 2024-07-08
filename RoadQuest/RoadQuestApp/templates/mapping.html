@@ -63,10 +63,22 @@
 
     <script>
         var map = L.map('map').setView([{{ map_center.0 }}, {{ map_center.1 }}], {{ zoom_level }});
-
+        
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
+
+        // Draw waypoints polyline on map
+        var waypoints = [
+            {% for waypoint in waypoints %}
+                {% with latitude=waypoint.1 longitude=waypoint.0 %}
+                    [{{ latitude }}, {{ longitude }}],
+                {% endwith %}
+            {% endfor %}
+        ];
+
+        var polyline = L.polyline(waypoints, {color: 'blue'}).addTo(map);
+        map.fitBounds(polyline.getBounds());
 
         // Adds POIs dynamically
         {% for poi in pois %}
