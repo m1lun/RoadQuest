@@ -1,37 +1,22 @@
 import requests
 from django.conf import settings
+from geopy.geocoders import Nominatim
 
 SEARCH_RADIUS = 20000
 
 # convert location to [latitude, longitude]
 # using OpenStreetMap Nominatim API
 def location_to_coords(location_name):
-    #test
-    base_url = "http://api.openweathermap.org/geo/1.0/direct"
+    
+    geolocator = Nominatim(user_agent="my-app-name")
+    location = geolocator.geocode(location_name)
 
-    params = {
-        "q": f"{location_name}",
-        "limit": 1,
-        "appid": settings.OWM_KEY
-    }
-
-    response = requests.get(base_url, params=params)
-
-    if response.status_code == 200:
-        data = response.json()
-        if data:
-            # extract latitude and longitude
-            latitude = data[0]["lat"]
-            longitude = data[0]["lon"]
-            print(latitude)
-            print(longitude)
-            return latitude, longitude
-        else:
-            print("No results found for the location:", location_name)
-            return None, None
+    if location:
+        return (location.latitude, location.longitude)
     else:
-        print("Error:", response.status_code)
-        return None, None
+        return None
+    
+    
 
 # send api request to route given start and end coordinates
 # start_coords: [latitude, longitude]
