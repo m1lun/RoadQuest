@@ -60,6 +60,19 @@
         #poi-details {
             margin-top: 30px;
         }
+
+        .expandable-section {
+            display: none;
+        }
+        .expand-btn {
+            cursor: pointer;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -84,11 +97,24 @@
             <p><strong>Total Distance:</strong> <span id="route-distance"></span></p>
             <p><strong>Estimated Time:</strong> <span id="route-time"></span></p>
         </div>
-        <div id = "filters">
-            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'lodging' %}'">Lodging</button>
-            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'gas_station' %}'">Gas Stations</button>
-            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'park' %}'">Parks</button>
+
+        <div id="filter-buttons">
+            {% for poi_type in types %}
+                <button onclick="location.href='{% url 'mapping_filtered' start1 end1 poi_type %}'">
+                    {{ poi_type|title }}
+                </button>
+            {% endfor %}
         </div>
+
+        <div class="expand-btn" onclick="toggleExpand()">Show More</div>
+        <div id="expandable-section" class="expandable-section">
+            {% for poi_type in secondary_types %}
+                <button onclick="location.href='{% url 'mapping_filtered' start1 end1 poi_type %}'">
+                    {{ poi_type|title }}
+                </button>
+            {% endfor %}
+        </div>
+        
     </div>
 
     <script>
@@ -147,6 +173,19 @@
             document.getElementById('route-distance').innerText = distance;
             document.getElementById('route-time').innerText = time;
         }
+
+        function toggleExpand() {
+            var section = document.getElementById('expandable-section');
+            var btn = document.querySelector('.expand-btn');
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+                btn.textContent = 'Show Less';
+            } else {
+                section.style.display = 'none';
+                btn.textContent = 'Show More';
+            }
+        }
+
     </script>
 </body>
 </html>
