@@ -94,7 +94,7 @@ def mapping(request, start1, end1, poi_type = ""):
     poi_type = 'lodging'
     poi_rating = 4.0
     poi_keyword = 'hotel'
-    pois = list(filter_pois(poi_type, user_id, poi_rating, poi_keyword))
+    pois = list(filter_pois(user_id, poi_type, poi_rating, poi_keyword))
     print(f"Found {len(pois)} hotels")
     waypoints  = routing(start_coord, end_coord)
     
@@ -116,8 +116,6 @@ def mapping(request, start1, end1, poi_type = ""):
         
     }
 
-    
-
     return render(request, 'mapping.html', context)
 
 def delete_pois(user_id):
@@ -125,7 +123,7 @@ def delete_pois(user_id):
     POI.objects.filter(user_id=user_id).delete()
     print(f"Deleted POIS for {user_id}")
     
-def filter_pois(poi_type, user_id, poi_rating=None, poi_keyword=None):
+def filter_pois(user_id, poi_type, poi_rating=None, poi_keyword=None):
     
     if(poi_type == ""):
         return POI.objects.filter(user_id=user_id)
