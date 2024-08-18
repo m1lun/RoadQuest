@@ -11,12 +11,25 @@
             height: 100vh;
         }
 
+        #main-panel {
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(to bottom, #6dd5ed, #2193b0);
+            color: white;
+            padding: 20px;
+            height: 100%;
+            z-index: 1000;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
         #side-panel {
-            width: 300px;
+            width: 250px;
             position: fixed;
             top: 0;
             right: -300px;
-            background: linear-gradient(to right, #6dd5ed, #2193b0); /* Example gradient */
+            background: linear-gradient(to right, #6dd5ed, #2193b0);
             overflow-x: hidden;
             color: white;
             transition: right 0.5s;
@@ -39,7 +52,10 @@
             color: white;
         }
 
-        
+        #route-details {
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
 
         #poi-details {
             margin-top: 30px;
@@ -58,6 +74,20 @@
             <p><strong>Type:</strong> <span id="poi-type"></span></p>
             <p><strong>Address:</strong> <span id="poi-address"></span></p>
             <!-- Other details once terry finishes google -->
+        </div>
+    </div>
+
+    <div id="main-panel">
+        <span class="closebtn" onclick="closePanel()">&times;</span>
+        <h1>RoadQuest</h1>
+        <div id="route-details">
+            <p><strong>Total Distance:</strong> <span id="route-distance"></span></p>
+            <p><strong>Estimated Time:</strong> <span id="route-time"></span></p>
+        </div>
+        <div id = "filters">
+            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'hotel' %}'">Hotels</button>
+            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'gas_station' %}'">Gas Stations</button>
+            <button onclick="location.href='{% url 'mapping_filtered' start1 end1 'park' %}'">Parks</button>
         </div>
     </div>
 
@@ -111,6 +141,11 @@
         // Close side panel
         function closePanel() {
             document.getElementById("side-panel").classList.remove('open');
+        }
+
+        function updateRouteDetails(distance, time) {
+            document.getElementById('route-distance').innerText = distance;
+            document.getElementById('route-time').innerText = time;
         }
     </script>
 </body>

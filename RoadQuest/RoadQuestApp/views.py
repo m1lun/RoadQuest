@@ -100,6 +100,8 @@ def mapping(request, start1, end1):
     map_center = [start_center, end_center]
     zoom_level = 8
 
+    
+
     context = {
         'pois': pois,
         'map_center': map_center,
