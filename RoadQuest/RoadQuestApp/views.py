@@ -4,6 +4,7 @@ from .models import RouteItem, POI
 from .forms import RouteForm
 from .utils import location_to_coords, routing, get_pois
 from django.conf import settings
+from django.db.models import Q
 import folium
 import pandas as pd
 import uuid
@@ -22,7 +23,7 @@ def get_or_create_session_user_id(request):
 def route(request):
     
     user_id = get_or_create_session_user_id(request)
-    
+    delete_pois(user_id)
     if request.method == "POST":
         form = RouteForm(request.POST)
         if form.is_valid():
@@ -63,7 +64,6 @@ def route(request):
                     print(f"Found POIS for waypoint: {index + 1} / {len(waypoints)}")
 
                 print(f"Sent {len(waypoints)} Google API requests for all POIs")
-
                 to_db(pois, user_id)
 
                 # Redirect to main mapping page
@@ -81,9 +81,9 @@ def route(request):
     return render(request, "main/route.html", {"form": form, **context})
 
 def mapping(request, start1, end1):
+    
     user_id = get_or_create_session_user_id(request)
     location = RouteItem.objects.filter(user_id=user_id, start=start1, end=end1).first()
-
     if not location:
         return render(request, "error.html", {"message": "Route not found."})
 
@@ -91,8 +91,9 @@ def mapping(request, start1, end1):
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
-
-    pois = list(POI.objects.filter(user_id=user_id))
+    poi_type = 'lodging'
+    pois = list(filter_pois(poi_type, user_id))
+    print(f"Found {len(pois)} hotels")
     waypoints  = routing(start_coord, end_coord)
     
     print(f"Gathered {len(pois)} out of {len(POI.objects.all())} total POIs")
@@ -107,7 +108,7 @@ def mapping(request, start1, end1):
         'waypoints' : waypoints
     }
 
-    delete_pois(user_id)
+    
 
     return render(request, 'mapping.html', context)
 
@@ -115,7 +116,10 @@ def delete_pois(user_id):
     RouteItem.objects.filter(user_id=user_id).delete()
     POI.objects.filter(user_id=user_id).delete()
     print(f"Deleted POIS for {user_id}")
-
+def filter_pois(poi_type, user_id):
+    
+    return POI.objects.filter(user_id=user_id).filter(Q(type__icontains=poi_type))
+    
 def to_db(pois, user_id):
     for poi in pois:
         POI.objects.update_or_create(
