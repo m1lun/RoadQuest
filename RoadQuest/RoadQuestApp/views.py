@@ -80,7 +80,7 @@ def route(request):
     }
     return render(request, "main/route.html", {"form": form, **context})
 
-def mapping(request, start1, end1):
+def mapping(request, start1, end1, poi_type = ""):
     
     user_id = get_or_create_session_user_id(request)
     location = RouteItem.objects.filter(user_id=user_id, start=start1, end=end1).first()
@@ -91,7 +91,7 @@ def mapping(request, start1, end1):
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
-    poi_type = 'lodging'
+
     pois = list(filter_pois(poi_type, user_id))
     print(f"Found {len(pois)} hotels")
     waypoints  = routing(start_coord, end_coord)
@@ -101,11 +101,17 @@ def mapping(request, start1, end1):
     map_center = [start_center, end_center]
     zoom_level = 8
 
+    
+
     context = {
         'pois': pois,
         'map_center': map_center,
         'zoom_level': zoom_level,
+        'current_filter': poi_type,
+        'start1': start1,
+        'end1': end1,
         'waypoints' : waypoints
+        
     }
 
     
@@ -118,6 +124,9 @@ def delete_pois(user_id):
     print(f"Deleted POIS for {user_id}")
 def filter_pois(poi_type, user_id):
     
+    if(poi_type == ""):
+        return POI.objects.filter(user_id=user_id)
+
     return POI.objects.filter(user_id=user_id).filter(Q(type__icontains=poi_type))
     
 def to_db(pois, user_id):
