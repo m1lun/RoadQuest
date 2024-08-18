@@ -92,8 +92,10 @@ def mapping(request, start1, end1, poi_type = ""):
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
-
-    pois = list(filter_pois(poi_type, user_id))
+    poi_type = 'lodging'
+    poi_rating = 4.0
+    poi_keyword = 'hotel'
+    pois = list(filter_pois(poi_type, user_id, poi_rating, poi_keyword))
 
     primary_types, secondary_types = get_all_types(user_id)
 
@@ -146,12 +148,21 @@ def get_all_types(user_id):
 
     return primary_types, secondary_types
 
-def filter_pois(poi_type, user_id):
+    
+def filter_pois(poi_type, user_id, poi_rating=None, poi_keyword=None):
     
     if(poi_type == ""):
         return POI.objects.filter(user_id=user_id)
+    
+    query = POI.objects.filter(user_id=user_id).filter(Q(type__icontains=poi_type))
+    
+    if poi_rating is not None:
+        query = query.filter(rating__gte=poi_rating)
+        
+    if poi_keyword:
+        query = query.filter(Q(name__icontains=poi_keyword) | Q(address__icontains=poi_keyword))
 
-    return POI.objects.filter(user_id=user_id).filter(Q(type__icontains=poi_type))
+    return query
     
 def to_db(pois, user_id):
     for poi in pois:
