@@ -95,7 +95,7 @@ def mapping(request, start1, end1, poi_type = ""):
     poi_type = 'lodging'
     poi_rating = 4.0
     poi_keyword = 'hotel'
-    pois = list(filter_pois(user_id, poi_type, poi_rating, poi_keyword)
+    pois = list(filter_pois(user_id, poi_type, poi_rating, poi_keyword))
 
     primary_types, secondary_types = get_all_types(user_id)
     print(f"Found {len(pois)} hotels")
