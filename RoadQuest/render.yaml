@@ -1,0 +1,25 @@
+databases:
+  - name: RoadQuest
+    plan: free
+    databaseName: RoadQuest
+    user: postgres
+
+services:
+  - type: web
+    plan: free
+    name: RoadQuest
+    runtime: python3.12
+    buildCommand: "./build.sh"
+    startCommand: "python3.12 -m gunicorn RoadQuest.asgi:application -k uvicorn.workers.UvicornWorker"
+    envVars:
+      - key: postgresql://postgres:Aweqwe@009@localhost:5432/RoadQuest
+        fromDatabase:
+          name: RoadQuest
+          property: connectionString
+      - key: google_key 
+        value: AIzaSyB6eGvwexcazL2tKNb0fFgiyay4gOFqdFs
+      - key: OWM_KEY
+        value: 69181b403bcaff728ca2d4bfff10dc24
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
