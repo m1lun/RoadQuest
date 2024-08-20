@@ -30,30 +30,40 @@ def route(request):
             # Get start & end location from form
             start_location = form.cleaned_data['start']
             end_location = form.cleaned_data['end']
+            stops = []
+            for i in range(1, 4):
+                if form.cleaned_data[f'stop{i}']:
+                    stops.append(form.cleaned_data[f'stop{i}'])
             
             instance = form.save(commit=False)
             instance.user_id = user_id
 
             # Convert locations to coordinates
-            start_coords = location_to_coords(start_location)
-            end_coords = location_to_coords(end_location)
+            coords_list = []
+            coords_list.append(location_to_coords(start_location))
+            coords_list.append(location_to_coords(end_location))
+            if stops:
+                stops_coords = [location_to_coords(stop) for stop in stops]
+                coords_list.extend(stops_coords)
 
-            instance.start_lat = start_coords[0]
-            instance.start_lng = start_coords[1]
-            instance.end_lat = end_coords[0]
-            instance.end_lng = end_coords[1]
+            print(coords_list)
+
+            instance.start_lat = coords_list[0][0]
+            instance.start_lng = coords_list[0][1]
+            instance.end_lat = coords_list[1][0]
+            instance.end_lng = coords_list[1][1]
             instance.save()
 
             print("Finished getting Coords for endpoints")
 
-            if start_coords and end_coords:
+            if coords_list[0] and coords_list[1]:
                 # Fetch routing information
-                waypoints = routing(start_coords, end_coords)
+                waypoints = routing(coords_list)
 
-                print(f"Finished getting Coords for {len(waypoints)} intermediate points")
+                print(f"Finished getting coords for {len(waypoints)} intermediate points")
 
                 pois = []
-                
+
                 for index, waypoint in enumerate(waypoints):
                     # if index % max(1, len(waypoints) // COORD_LIMIT) == 0:
 
@@ -94,14 +104,12 @@ def mapping(request, start1, end1, poi_type = ""):
 
     pois = list(filter_pois(poi_type, user_id))
     print(f"Found {len(pois)} hotels")
-    waypoints  = routing(start_coord, end_coord)
-    
+    waypoints = routing([start_coord, end_coord])
+
     print(f"Gathered {len(pois)} out of {len(POI.objects.all())} total POIs")
-        
+
     map_center = [start_center, end_center]
     zoom_level = 8
-
-    
 
     context = {
         'pois': pois,
@@ -113,8 +121,6 @@ def mapping(request, start1, end1, poi_type = ""):
         'waypoints' : waypoints
         
     }
-
-    
 
     return render(request, 'mapping.html', context)
 

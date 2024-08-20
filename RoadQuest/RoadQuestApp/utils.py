@@ -21,19 +21,19 @@ def location_to_coords(location_name):
 # send api request to route given start and end coordinates
 # start_coords: [latitude, longitude]
 # using OSRM API
-def routing(start_coords, end_coords):
+def routing(coords_list):
 
+    coord_string = ";".join([f"{log}, {lat}" for lat, log in coords_list])
     # Mapbox Directions API endpoint
-    base_url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}"
-    print(f"attempting https://api.mapbox.com/directions/v5/mapbox/driving/{start_coords[1]},{start_coords[0]};{end_coords[1]},{end_coords[0]}")
+    base_url = f"https://api.mapbox.com/directions/v5/mapbox/driving/{coord_string}"
+    print(f"attempting https://api.mapbox.com/directions/v5/mapbox/driving/")
 
     # parameters
     params = {
-        'access_token': settings.MAPBOX_KEY, 
-        'geometries': 'geojson',  
+        'access_token': settings.MAPBOX_KEY,
+        'geometries': 'geojson',
         'annotations': 'distance',
         'overview': 'full'
-          
     }
 
     # send the GET request to Mapbox API
