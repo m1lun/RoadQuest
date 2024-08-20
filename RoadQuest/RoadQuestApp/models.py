@@ -23,7 +23,7 @@ class RouteItem(models.Model):
 class POI(models.Model):
     user_id = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=100)  # e.g., 'restaurant', 'hotel'
+    type = models.CharField(max_length=255)  # e.g., 'restaurant', 'hotel'
     address = models.CharField(max_length=255, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
