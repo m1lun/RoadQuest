@@ -91,7 +91,7 @@ def route(request):
     }
     return render(request, "main/route.html", {"form": form, **context})
 
-def mapping(request, start1, end1, poi_type = ""):
+def mapping(request, start1, end1, poi_types = None, poi_rating = None, poi_keyword = None):
     
     user_id = get_or_create_session_user_id(request)
     location = RouteItem.objects.filter(user_id=user_id, start=start1, end=end1).first()
@@ -102,10 +102,8 @@ def mapping(request, start1, end1, poi_type = ""):
     start_coord, end_coord = location.get_start_coords(), location.get_end_coords() 
     start_center = (start_coord[0] + end_coord[0]) / 2
     end_center = (start_coord[1] + end_coord[1]) / 2
-    poi_type = 'lodging'
-    poi_rating = 4.0
-    poi_keyword = 'hotel'
-    pois = list(filter_pois(user_id, poi_type, poi_rating, poi_keyword))
+
+    pois = list(filter_pois(user_id, poi_types, poi_rating, poi_keyword))
 
     primary_types, secondary_types = get_all_types(user_id)
     print(f"Found {len(pois)} hotels")
@@ -116,18 +114,17 @@ def mapping(request, start1, end1, poi_type = ""):
     map_center = [start_center, end_center]
     zoom_level = 8
 
-
     context = {
         'pois': pois,
         'map_center': map_center,
         'zoom_level': zoom_level,
-        'current_filter': poi_type,
+        'current_filter': poi_types,
+        'current_rating': poi_rating,
         'types': primary_types,
         'secondary_types': secondary_types,
         'start1': start1,
         'end1': end1,
         'waypoints' : waypoints
-        
     }
 
     return render(request, 'mapping.html', context)
@@ -142,33 +139,38 @@ def get_all_types(user_id):
     
     type_counts = {}
     for type_str in types_list:
-        # Split the comma-separated types and count each type
         for t in type_str.split(', '):
             type_counts[t] = type_counts.get(t, 0) + 1
 
     fixed_types = ['Lodging', 'Gas Station', 'Park']
     other_types = [t for t in type_counts.keys() if t not in fixed_types]
     sorted_types = sorted(other_types, key=lambda t: -type_counts[t])
-    
-    # Combine fixed types with sorted types
     all_types = fixed_types + sorted_types
 
-    primary_types = all_types[:5]
-    secondary_types = all_types[5:]
+    primary_types = all_types[:5] # First 5 show by default
+    secondary_types = all_types[5:] # Last 5 need to be expanded
 
     return primary_types, secondary_types
 
     
-def filter_pois(user_id, poi_type, poi_rating=None, poi_keyword=None):
+def filter_pois(user_id, poi_types=None, poi_rating=None, poi_keyword=None):
     
-    if(poi_type == ""):
-        return POI.objects.filter(user_id=user_id)
+    query = POI.objects.filter(user_id=user_id)
+
+    if poi_types and poi_types != 'None':
+        types_list = poi_types.split(',')
+        print(f"types to filter: {types_list}")
+
+        type_filter = Q()
+
+        for t in types_list:
+            type_filter |= Q(type__icontains=t)
+
+        query = query.filter(type_filter)
     
-    query = POI.objects.filter(user_id=user_id).filter(Q(type__icontains=poi_type))
-    
-    if poi_rating is not None:
+    if poi_rating is not None and poi_rating != 'None':
         query = query.filter(rating__gte=poi_rating)
-        
+    
     if poi_keyword:
         query = query.filter(Q(name__icontains=poi_keyword) | Q(address__icontains=poi_keyword))
 
