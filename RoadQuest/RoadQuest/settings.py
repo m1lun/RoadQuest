@@ -36,7 +36,7 @@ SECRET_KEY = 'django-insecure-p77!@8j#u9g_yyia-ncijw5j!c9m*grbh8!)pqcj#&&$e56a%x
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost','roadquest.onrender.com']
 
 
 # Application definition
@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'RoadQuest.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('postgresql://postgres:Aweqwe@009@localhost:5432/RoadQuest'),
+        default='postgresql://postgres:Aweqwe@009@localhost:5432/RoadQuest',
         conn_max_age=600
     )
 }
