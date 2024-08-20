@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'RoadQuest.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://josephwang:mBRNIx5aJTrqPJDl6awTbYA8DOIh85HX@dpg-cr1vu58gph6c73bdip0g-a/roadquest_hth6',
+        default='postgresql://josephwang:mBRNIx5aJTrqPJDl6awTbYA8DOIh85HX@dpg-cr1vu58gph6c73bdip0g-a.oregon-postgres.render.com/roadquest_hth6',
         conn_max_age=600
     )
 }
