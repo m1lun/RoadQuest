@@ -11,5 +11,5 @@ pip3 install -r requirements.txt
 python3 manage.py collectstatic --no-input
 
 # Apply any outstanding database migrations
-python3 manage.py makemigrations
+python3 manage.py makemigrations --merge
 python3 manage.py migrate
