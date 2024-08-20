@@ -10,6 +10,9 @@ class RouteItem(models.Model):
     start_lng = models.FloatField(blank=True, null=True)
     end_lat = models.FloatField(blank=True, null=True)
     end_lng = models.FloatField(blank=True, null=True)
+    stop1 = models.CharField(max_length=200, blank=True)
+    stop2 = models.CharField(max_length=200, blank=True)
+    stop3 = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return f"Route from {self.start} ({self.start_lat}, {self.start_lng}) to {self.end} ({self.end_lat}, {self.end_lng})"
@@ -23,7 +26,7 @@ class RouteItem(models.Model):
 class POI(models.Model):
     user_id = models.UUIDField(default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=100)  # e.g., 'restaurant', 'hotel'
+    type = models.CharField(max_length=255)  # e.g., 'restaurant', 'hotel'
     address = models.CharField(max_length=255, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
