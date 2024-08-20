@@ -12,9 +12,23 @@ body {
   color: white;
   text-align: center;
   margin-top: 90px;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke-width: 2px;
+  /* -webkit-text-fill-color: transparent;
+  -webkit-text-stroke-width: 0.5px; */
   user-select: none;
+  text-shadow: 1px 1px 1px #919191,
+        1px 2px 1px #919191,
+        1px 3px 1px #919191,
+        1px 4px 1px #919191,
+        1px 5px 1px #919191,
+        1px 6px 1px #919191,
+        1px 7px 1px #919191,
+        1px 8px 1px #919191,
+        1px 9px 1px #919191,
+        1px 10px 1px #919191,
+    1px 18px 6px rgba(16,16,16,0.4),
+    1px 22px 10px rgba(16,16,16,0.2),
+    1px 25px 35px rgba(16,16,16,0.2),
+    1px 30px 60px rgba(16,16,16,0.4);
 }
 
 .gobutton {
@@ -65,10 +79,15 @@ body {
 
 .locationbox {
   display: flex;
-  gap: 25em;
   align-items: center;
   justify-content: center;
-  margin-top: 8em;
+  gap: 40em;
+  margin-top: 6em;
+}
+
+.destinationbox {
+  display: flex;
+  position: relative;
 }
 
 .inputbox {
@@ -83,7 +102,7 @@ body {
   box-sizing: border-box;
   box-shadow: 0 0.125em 0.3125em rgba(black, black, black, 0.3);
   user-select: none;
-  background: transparent;
+  background: white;
   border: 2px solid black;
   border-radius: 10px;
 

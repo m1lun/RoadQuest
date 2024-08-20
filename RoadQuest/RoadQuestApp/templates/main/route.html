@@ -6,6 +6,8 @@
 
 <script src="https://maps.googleapis.com/maps/api/js?key={{ google_key }}&libraries=places"></script>
 <script>
+    var stopCount = 1;
+
     function initializeAutocomplete() { // JS Section
         var startInput = document.getElementById('start'); //grabs info from each field
         var endInput = document.getElementById('end');
@@ -19,7 +21,35 @@
         new google.maps.places.Autocomplete(endInput, options);
     }
 
+    function addStop() {
+        if (stopCount < 4) {
+            var newStop = document.createElement('input');
+            newStop.setAttribute('type', 'text');
+            newStop.setAttribute('id', 'stop' + stopCount)
+            newStop.setAttribute('name', 'stop' + stopCount);
+            newStop.setAttribute('placeholder', 'New Stop');
+            newStop.classList.add('inputbox');
+
+            var options = {
+                types: ['geocode'],
+                componentRestrictions: { country: 'ca' }
+            };
+            new google.maps.places.Autocomplete(newStop, options);
+
+            var destinationBox = document.querySelector('.desinationbox');
+            destinationBox.insertBefore(newStop, destinationBox.lastElementChild);
+
+            stopCount++;
+
+            if (stopCount === 4) {
+                var addStopButton = document.querySelector('button[name="addstops"]');
+                addStopButton.remove();
+            }
+        }
+    }
+
     window.onload = initializeAutocomplete;
+
 </script>
 
 <html lang="en">
@@ -43,9 +73,12 @@
                 <input type="text" id="start" name="start" required placeholder="From" class="inputbox" 
                 oninvalid="this.setCustomValidity('Enter Start Location')"
                 oninput="this.setCustomValidity('')"/>
-                <input type="text" id="end" name="end" required placeholder="To" class="inputbox" 
-                oninvalid="this.setCustomValidity('Enter Destination')"
-                oninput="this.setCustomValidity('')"/>
+                <div class = "desinationbox">
+                    <input type="text" id="end" name="end" required placeholder="To" class="inputbox" 
+                    oninvalid="this.setCustomValidity('Enter Destination')"
+                    oninput="this.setCustomValidity('')"/>
+                    <button type="button" name="addstops" class="inputbox" onclick="addStop()">Add Stops</button>
+                </div>
             </div>
         </form>
     </body>
